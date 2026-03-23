@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Dictation App for Ubuntu Linux
-Press Ctrl+Alt+D to toggle dictation on/off.
+Press Alt+D to toggle dictation on/off.
 Speaks into microphone, transcribes with faster-whisper, types into focused app.
 """
 
@@ -16,8 +16,6 @@ from evdev import ecodes
 import pyaudio
 import webrtcvad
 from faster_whisper import WhisperModel
-import pystray
-from PIL import Image, ImageDraw
 
 # Set ydotool socket path for Wayland
 if not os.environ.get('YDOTOOL_SOCKET'):
@@ -42,7 +40,6 @@ class DictationApp:
 
         # Hotkey state
         self.alt_pressed = False
-        self.ctrl_pressed = False
         self.keyboard_device = None
 
         # Audio
@@ -94,12 +91,11 @@ class DictationApp:
 
     def on_recording_start(self):
         """Called when recording starts."""
-        print("\n[DICTATING] Speak now... (Ctrl+Alt+D to stop)")
-        self._update_tray(True)
+        print("\n[DICTATING] Speak now... (Alt+D to stop)")
 
     def on_recording_stop(self):
         """Called when recording stops."""
-        self._update_tray(False)
+        pass
 
     def transcribe_audio(self, audio_data: bytes) -> str:
         """Transcribe audio using faster-whisper locally."""
@@ -272,72 +268,19 @@ class DictationApp:
                         if event.type == ecodes.EV_KEY:
                             key_event = evdev.categorize(event)
 
-                            # Track Ctrl key state
-                            if key_event.scancode in (ecodes.KEY_LEFTCTRL, ecodes.KEY_RIGHTCTRL):
-                                if key_event.keystate == key_event.key_down:
-                                    self.ctrl_pressed = True
-                                elif key_event.keystate == key_event.key_up:
-                                    self.ctrl_pressed = False
-
                             # Track Alt key state
-                            elif key_event.scancode in (ecodes.KEY_LEFTALT, ecodes.KEY_RIGHTALT):
+                            if key_event.scancode in (ecodes.KEY_LEFTALT, ecodes.KEY_RIGHTALT):
                                 if key_event.keystate == key_event.key_down:
                                     self.alt_pressed = True
                                 elif key_event.keystate == key_event.key_up:
                                     self.alt_pressed = False
 
-                            # Check for D key press while Ctrl+Alt is held
+                            # Check for D key press while Alt is held
                             elif key_event.scancode == ecodes.KEY_D:
-                                if key_event.keystate == key_event.key_down and self.ctrl_pressed and self.alt_pressed:
+                                if key_event.keystate == key_event.key_down and self.alt_pressed:
                                     threading.Thread(target=self.toggle_recording).start()
         except Exception as e:
             print(f"[ERROR] Keyboard listener error: {e}")
-
-    def _create_icon_image(self, color):
-        """Create a simple circle icon with the given color."""
-        size = 64
-        img = Image.new('RGBA', (size, size), (0, 0, 0, 0))
-        draw = ImageDraw.Draw(img)
-        draw.ellipse([4, 4, size - 4, size - 4], fill=color)
-        # Draw mic shape
-        draw.rectangle([24, 12, 40, 38], fill='white')
-        draw.arc([24, 8, 40, 20], 0, 360, fill='white', width=2)
-        draw.arc([18, 28, 46, 52], 180, 360, fill='white', width=3)
-        draw.line([32, 52, 32, 58], fill='white', width=3)
-        draw.line([24, 58, 40, 58], fill='white', width=3)
-        return img
-
-    def _setup_tray(self):
-        """Set up the system tray icon."""
-        self.tray_icon = pystray.Icon(
-            "dictation",
-            self._create_icon_image('gray'),
-            "Dictation - Idle",
-            menu=pystray.Menu(
-                pystray.MenuItem("Toggle (Ctrl+Alt+D)", lambda: self.toggle_recording()),
-                pystray.MenuItem("Quit", self._quit_from_tray),
-            )
-        )
-
-    def _update_tray(self, recording):
-        """Update tray icon to reflect recording state."""
-        if not hasattr(self, 'tray_icon') or not self.tray_icon:
-            return
-        if recording:
-            self.tray_icon.icon = self._create_icon_image('red')
-            self.tray_icon.title = "Dictation - Recording"
-        else:
-            self.tray_icon.icon = self._create_icon_image('gray')
-            self.tray_icon.title = "Dictation - Idle"
-
-    def _quit_from_tray(self):
-        """Quit app from tray menu."""
-        self.shutdown_flag = True
-        with self.lock:
-            self.recording = False
-        self._shutdown_audio()
-        if hasattr(self, 'tray_icon') and self.tray_icon:
-            self.tray_icon.stop()
 
     def check_ydotool(self) -> bool:
         """Check if ydotool is available and working."""
@@ -365,23 +308,14 @@ class DictationApp:
             print("Run: sudo ydotoold &")
             sys.exit(1)
 
-        print("Ready! Press Ctrl+Alt+D to toggle dictation.")
+        print("Ready! Press Alt+D to toggle dictation.")
         print("Press Ctrl+C to exit.")
         print()
 
-        # Set up tray icon
-        self._setup_tray()
-
-        # Start keyboard listener in background thread
-        kb_thread = threading.Thread(target=self.keyboard_listener, daemon=True)
-        kb_thread.start()
-
-        # Run tray icon on main thread (required for GTK)
+        # Start keyboard listener using evdev (works on Wayland)
         try:
-            self.tray_icon.run()
+            self.keyboard_listener()
         except KeyboardInterrupt:
-            pass
-        finally:
             print("\nExiting...")
             with self.lock:
                 self.recording = False

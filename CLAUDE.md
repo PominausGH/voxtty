@@ -9,7 +9,7 @@ Python voice dictation application.
 ## Commands
 - `./setup.sh` - Initial setup
 - `pip install -r requirements.txt` - Install dependencies
-- `python dictation.py` - Run dictation (Ctrl+Alt+D to toggle)
+- `python dictation.py` - Run dictation
 
 ## Structure
 - `dictation.py` - Main application
