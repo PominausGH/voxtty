@@ -16,6 +16,8 @@ from evdev import ecodes
 import pyaudio
 import webrtcvad
 from faster_whisper import WhisperModel
+import pystray
+from PIL import Image, ImageDraw
 
 # Set ydotool socket path for Wayland
 if not os.environ.get('YDOTOOL_SOCKET'):
