@@ -294,6 +294,52 @@ class DictationApp:
         except Exception as e:
             print(f"[ERROR] Keyboard listener error: {e}")
 
+    def _create_icon_image(self, color):
+        """Create a simple circle icon with the given color."""
+        size = 64
+        img = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(img)
+        draw.ellipse([4, 4, size - 4, size - 4], fill=color)
+        # Draw mic shape
+        draw.rectangle([24, 12, 40, 38], fill='white')
+        draw.arc([24, 8, 40, 20], 0, 360, fill='white', width=2)
+        draw.arc([18, 28, 46, 52], 180, 360, fill='white', width=3)
+        draw.line([32, 52, 32, 58], fill='white', width=3)
+        draw.line([24, 58, 40, 58], fill='white', width=3)
+        return img
+
+    def _setup_tray(self):
+        """Set up the system tray icon."""
+        self.tray_icon = pystray.Icon(
+            "dictation",
+            self._create_icon_image('gray'),
+            "Dictation - Idle",
+            menu=pystray.Menu(
+                pystray.MenuItem("Toggle (Ctrl+Alt+D)", lambda: self.toggle_recording()),
+                pystray.MenuItem("Quit", self._quit_from_tray),
+            )
+        )
+
+    def _update_tray(self, recording):
+        """Update tray icon to reflect recording state."""
+        if not hasattr(self, 'tray_icon') or not self.tray_icon:
+            return
+        if recording:
+            self.tray_icon.icon = self._create_icon_image('red')
+            self.tray_icon.title = "Dictation - Recording"
+        else:
+            self.tray_icon.icon = self._create_icon_image('gray')
+            self.tray_icon.title = "Dictation - Idle"
+
+    def _quit_from_tray(self):
+        """Quit app from tray menu."""
+        self.shutdown_flag = True
+        with self.lock:
+            self.recording = False
+        self._shutdown_audio()
+        if hasattr(self, 'tray_icon') and self.tray_icon:
+            self.tray_icon.stop()
+
     def check_ydotool(self) -> bool:
         """Check if ydotool is available and working."""
         try:
