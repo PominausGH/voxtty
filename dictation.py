@@ -316,7 +316,7 @@ class DictationApp:
             print("Run: sudo ydotoold &")
             sys.exit(1)
 
-        print("Ready! Press Alt+D to toggle dictation.")
+        print("Ready! Press Ctrl+Alt+D to toggle dictation.")
         print("Press Ctrl+C to exit.")
         print()
 
