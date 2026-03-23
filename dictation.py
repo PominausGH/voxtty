@@ -95,10 +95,11 @@ class DictationApp:
     def on_recording_start(self):
         """Called when recording starts."""
         print("\n[DICTATING] Speak now... (Ctrl+Alt+D to stop)")
+        self._update_tray(True)
 
     def on_recording_stop(self):
         """Called when recording stops."""
-        pass
+        self._update_tray(False)
 
     def transcribe_audio(self, audio_data: bytes) -> str:
         """Transcribe audio using faster-whisper locally."""
@@ -370,10 +371,19 @@ class DictationApp:
         print("Press Ctrl+C to exit.")
         print()
 
-        # Start keyboard listener using evdev (works on Wayland)
+        # Set up tray icon
+        self._setup_tray()
+
+        # Start keyboard listener in background thread
+        kb_thread = threading.Thread(target=self.keyboard_listener, daemon=True)
+        kb_thread.start()
+
+        # Run tray icon on main thread (required for GTK)
         try:
-            self.keyboard_listener()
+            self.tray_icon.run()
         except KeyboardInterrupt:
+            pass
+        finally:
             print("\nExiting...")
             with self.lock:
                 self.recording = False
