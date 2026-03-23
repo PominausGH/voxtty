@@ -92,7 +92,7 @@ class DictationApp:
 
     def on_recording_start(self):
         """Called when recording starts."""
-        print("\n[DICTATING] Speak now... (Alt+D to stop)")
+        print("\n[DICTATING] Speak now... (Ctrl+Alt+D to stop)")
 
     def on_recording_stop(self):
         """Called when recording stops."""
