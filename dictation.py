@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Dictation App for Ubuntu Linux
-Press Alt+D to toggle dictation on/off.
+Press Ctrl+Alt+D to toggle dictation on/off.
 Speaks into microphone, transcribes with faster-whisper, types into focused app.
 """
 
@@ -40,6 +40,7 @@ class DictationApp:
 
         # Hotkey state
         self.alt_pressed = False
+        self.ctrl_pressed = False
         self.keyboard_device = None
 
         # Audio
@@ -268,16 +269,23 @@ class DictationApp:
                         if event.type == ecodes.EV_KEY:
                             key_event = evdev.categorize(event)
 
+                            # Track Ctrl key state
+                            if key_event.scancode in (ecodes.KEY_LEFTCTRL, ecodes.KEY_RIGHTCTRL):
+                                if key_event.keystate == key_event.key_down:
+                                    self.ctrl_pressed = True
+                                elif key_event.keystate == key_event.key_up:
+                                    self.ctrl_pressed = False
+
                             # Track Alt key state
-                            if key_event.scancode in (ecodes.KEY_LEFTALT, ecodes.KEY_RIGHTALT):
+                            elif key_event.scancode in (ecodes.KEY_LEFTALT, ecodes.KEY_RIGHTALT):
                                 if key_event.keystate == key_event.key_down:
                                     self.alt_pressed = True
                                 elif key_event.keystate == key_event.key_up:
                                     self.alt_pressed = False
 
-                            # Check for D key press while Alt is held
+                            # Check for D key press while Ctrl+Alt is held
                             elif key_event.scancode == ecodes.KEY_D:
-                                if key_event.keystate == key_event.key_down and self.alt_pressed:
+                                if key_event.keystate == key_event.key_down and self.ctrl_pressed and self.alt_pressed:
                                     threading.Thread(target=self.toggle_recording).start()
         except Exception as e:
             print(f"[ERROR] Keyboard listener error: {e}")
