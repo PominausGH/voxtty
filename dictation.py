@@ -285,6 +285,8 @@ class DictationApp:
 
                             # Check for D key press while Ctrl+Alt is held
                             elif key_event.scancode == ecodes.KEY_D:
+                                if key_event.keystate == key_event.key_down:
+                                    print(f"[DEBUG] D pressed, ctrl={self.ctrl_pressed}, alt={self.alt_pressed}")
                                 if key_event.keystate == key_event.key_down and self.ctrl_pressed and self.alt_pressed:
                                     threading.Thread(target=self.toggle_recording).start()
         except Exception as e:
