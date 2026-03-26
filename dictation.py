@@ -103,9 +103,18 @@ class DictationApp:
             # Convert raw bytes to float32 numpy array
             audio_np = np.frombuffer(audio_data, dtype=np.int16).astype(np.float32) / 32768.0
 
-            segments, _ = self.whisper.transcribe(audio_np, language="en", beam_size=1)
-            text = " ".join(seg.text.strip() for seg in segments)
-            return text.strip()
+            segments, info = self.whisper.transcribe(audio_np, language="en", beam_size=1)
+            parts = []
+            for seg in segments:
+                # Skip segments where Whisper thinks there's no speech
+                if seg.no_speech_prob > 0.5:
+                    continue
+                parts.append(seg.text.strip())
+            text = " ".join(parts).strip()
+            # Filter out hallucination junk (lone punctuation, common phantom phrases)
+            if not text or all(c in ".,!?;:-'" for c in text):
+                return ""
+            return text
         except Exception as e:
             print(f"[ERROR] Transcription failed: {e}")
             return ""
@@ -171,7 +180,7 @@ class DictationApp:
 
                     # If enough silence after speech, transcribe
                     if silence_chunks >= silence_chunks_threshold:
-                        min_chunks = int(0.5 * chunks_per_second)  # 0.5s minimum
+                        min_chunks = int(1.0 * chunks_per_second)  # 1s minimum
                         if len(audio_buffer) >= min_chunks and self.recording:
                             audio_data = b''.join(audio_buffer)
                             text = self.transcribe_audio(audio_data)
