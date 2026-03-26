@@ -45,7 +45,7 @@ class DictationApp:
         # Audio
         self.audio = None
         self.stream = None
-        self.vad = webrtcvad.Vad(2)  # Aggressiveness 0-3, 2 is balanced
+        self.vad = webrtcvad.Vad(3)  # Aggressiveness 0-3, 3 = most aggressive filtering
 
         # Typing queue — ensures text is pasted sequentially
         self.text_queue = queue.Queue()
