@@ -171,7 +171,8 @@ class DictationApp:
 
                     # If enough silence after speech, transcribe
                     if silence_chunks >= silence_chunks_threshold:
-                        if audio_buffer and self.recording:
+                        min_chunks = int(0.5 * chunks_per_second)  # 0.5s minimum
+                        if len(audio_buffer) >= min_chunks and self.recording:
                             audio_data = b''.join(audio_buffer)
                             text = self.transcribe_audio(audio_data)
                             if text:
