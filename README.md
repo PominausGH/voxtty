@@ -31,8 +31,8 @@ sudo ydotoold &
 sudo usermod -aG input $USER
 
 # Clone and setup
-git clone https://github.com/PominausGH/dictation-app.git
-cd dictation-app
+git clone https://github.com/PominausGH/voxtty.git
+cd voxtty
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
