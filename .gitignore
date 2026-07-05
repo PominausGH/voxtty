@@ -5,3 +5,10 @@ __pycache__/
 .env
 *.log
 16000
+
+# Local machine config (auto-generated from _DEFAULTS; holds your mic name)
+config.json
+
+# Secrets — never commit API keys
+env
+*.key

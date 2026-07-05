@@ -1,6 +1,6 @@
-# Dictation App
+# Voxtty
 
-Python voice dictation application.
+Voxtty — a Python voice dictation app for Linux (local-first, optional AI cleanup).
 
 ## Tech Stack
 - Language: Python
@@ -9,17 +9,17 @@ Python voice dictation application.
 ## Commands
 - `./setup.sh` - Initial setup
 - `pip install -r requirements.txt` - Install dependencies
-- `python dictation.py` - Run dictation
+- `python voxtty.py` - Run dictation
 
 ## Structure
-- `dictation.py` - Main application
+- `voxtty.py` - Main application
 - `setup.sh` - Setup script
 - `venv/` - Virtual environment
 
 ## Setup
 1. Run `./setup.sh` for initial setup
 2. Activate venv: `source venv/bin/activate`
-3. Run: `python dictation.py`
+3. Run: `python voxtty.py`
 
 ## Superpowers
 Use these skills when working on this project:

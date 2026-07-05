@@ -1,4 +1,4 @@
-# Dictation App
+# Voxtty
 
 Voice dictation for Ubuntu Linux with real-time streaming transcription.
 
@@ -42,7 +42,7 @@ pip install -r requirements.txt
 
 ```bash
 source venv/bin/activate
-python dictation.py
+python voxtty.py
 ```
 
 1. Press **Ctrl+Shift+D** to start dictating
@@ -57,7 +57,7 @@ Uses [RealtimeSTT](https://github.com/KoljaB/RealtimeSTT) for streaming Whisper 
 
 ## Configuration
 
-Edit `dictation.py` to adjust:
+Edit `voxtty.py` to adjust:
 
 - `model="tiny"` - Whisper model size (tiny/base/small/medium/large)
 - `realtime_processing_pause=0.1` - Update frequency in seconds
