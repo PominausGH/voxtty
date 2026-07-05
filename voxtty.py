@@ -68,6 +68,9 @@ _DEFAULTS: dict = {
     # punctuation/capitalization and strip fillers before typing. Requires an
     # API key in ANTHROPIC_API_KEY or ~/.config/voxtty/env. Off = fully
     # local/offline. Falls back to raw text if the key or SDK is missing.
+    # Local, offline formatting cleanup (capitalization, spacing, punctuation
+    # spacing). No API, no network — safe to leave on for the free tier.
+    "rule_cleanup_enabled": True,
     "cleanup_enabled": False,
     "cleanup_model": "claude-haiku-4-5",
     # Local, offline whole-word replacements applied before cleanup, e.g.
@@ -182,6 +185,8 @@ class VoxttyApp:
             if text is None:
                 break
             text = self._apply_replacements(text)
+            if CFG["rule_cleanup_enabled"]:
+                text = self._rule_cleanup(text)
             if self.cleanup_enabled and self._cleanup_ready():
                 text = self._cleanup_text(text)
             if not text:
@@ -217,6 +222,22 @@ class VoxttyApp:
                 continue
             text = re.sub(rf"\b{re.escape(spoken)}\b", written, text, flags=re.IGNORECASE)
         return text
+
+    # ── Rule-based cleanup (local, offline, no API) ────────────────────────
+
+    def _rule_cleanup(self, text: str) -> str:
+        """Tidy spacing, punctuation, and capitalization. Purely local."""
+        t = text.strip()
+        if not t:
+            return t
+        t = re.sub(r"\s+", " ", t)                          # collapse whitespace
+        t = re.sub(r"\s+([,.!?;:])", r"\1", t)              # no space before punctuation
+        t = re.sub(r"([,.!?;:])(?=[^\s\d])", r"\1 ", t)     # space after punctuation (not mid-number)
+        t = re.sub(r"\bi\b", "I", t)                        # standalone "i" -> "I"
+        t = re.sub(r"\bi'", "I'", t)                        # i'm/i'll/i've -> I'm/I'll/I've
+        # Capitalize the first letter, and the first letter after . ! ?
+        t = re.sub(r"(^|[.!?]\s+)([a-z])", lambda m: m.group(1) + m.group(2).upper(), t)
+        return t
 
     # ── AI cleanup (opt-in, Claude API) ────────────────────────────────────
 
