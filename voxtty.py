@@ -498,21 +498,71 @@ class VoxttyApp:
         return keyboards
 
     def keyboard_listener(self) -> None:
-        keyboards = self._find_keyboards()
-        if not keyboards:
+        sel = selectors.DefaultSelector()
+        registered: dict[str, evdev.InputDevice] = {}
+
+        def refresh_devices() -> None:
+            """(Re)scan for keyboards and register any not already watched.
+
+            Wireless receivers drop out on power-save and come back with the
+            same path, so we poll periodically to recover them. A dead device
+            is dropped in the read loop below; this re-adds it once it returns.
+            """
+            try:
+                found = {kb.path: kb for kb in self._find_keyboards()}
+            except Exception as e:
+                log.warning(f"Keyboard scan failed: {e}")
+                return
+            for path, kb in found.items():
+                if path in registered:
+                    kb.close()  # already watching this one
+                    continue
+                try:
+                    sel.register(kb, selectors.EVENT_READ)
+                    registered[path] = kb
+                    log.info(f"Keyboard: {kb.name}")
+                except Exception as e:
+                    log.warning(f"Could not watch {kb.name}: {e}")
+                    kb.close()
+
+        def drop_device(kb: evdev.InputDevice) -> None:
+            try:
+                sel.unregister(kb)
+            except Exception:
+                pass
+            registered.pop(kb.path, None)
+            try:
+                kb.close()
+            except Exception:
+                pass
+            # The key-up never arrives for a device that vanished mid-chord,
+            # so a held Alt would latch on and make bare 'D' a hotkey.
+            self.alt_pressed = False
+
+        refresh_devices()
+        if not registered:
             log.error("No keyboard devices found — check 'input' group membership.")
             return
-        for kb in keyboards:
-            log.info(f"Keyboard: {kb.name}")
 
-        sel = selectors.DefaultSelector()
-        for kb in keyboards:
-            sel.register(kb, selectors.EVENT_READ)
-
+        last_scan = time.monotonic()
         try:
             while not self.shutdown_flag:
+                # Periodically re-scan so reconnected keyboards come back.
+                if time.monotonic() - last_scan > 5.0:
+                    refresh_devices()
+                    last_scan = time.monotonic()
+
                 for key, _ in sel.select(timeout=1.0):
-                    for event in key.fileobj.read():
+                    kb = key.fileobj
+                    try:
+                        events = kb.read()
+                    except OSError as e:
+                        # A single device vanished (Errno 19). Drop it and keep
+                        # the loop alive for the remaining keyboards.
+                        log.warning(f"Keyboard '{kb.name}' lost ({e}); will retry.")
+                        drop_device(kb)
+                        continue
+                    for event in events:
                         if event.type != ecodes.EV_KEY:
                             continue
                         ke = evdev.categorize(event)
@@ -522,7 +572,11 @@ class VoxttyApp:
                             if self.alt_pressed:
                                 threading.Thread(target=self.toggle_state, daemon=True).start()
         except Exception as e:
-            log.error(f"Keyboard listener error: {e}")
+            log.error(f"Keyboard listener error: {e}", exc_info=True)
+        finally:
+            for kb in list(registered.values()):
+                drop_device(kb)
+            sel.close()
 
     # ── Tray ──────────────────────────────────────────────────────────────────
 
