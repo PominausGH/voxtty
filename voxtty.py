@@ -55,8 +55,8 @@ _DEFAULTS: dict = {
     "sample_rate": 16000,
     "chunk_duration_ms": 30,
     "silence_threshold": 0.8,
-    "min_speech_frames": 5,
-    "no_speech_prob_threshold": 0.75,
+    "min_speech_frames": 15,
+    "no_speech_prob_threshold": 0.4,
     "min_rms_energy": 80,
     "wake_word": "hey_jarvis",
     "wake_word_threshold": 0.75,
@@ -326,6 +326,8 @@ class VoxttyApp:
             segments, _ = self.whisper.transcribe(
                 audio_np, language="en", beam_size=1,
                 initial_prompt=CFG["whisper_initial_prompt"] or None,
+                vad_filter=True,
+                condition_on_previous_text=False,
             )
             parts = [
                 seg.text.strip()
@@ -376,7 +378,7 @@ class VoxttyApp:
 
     def _run_audio_stream(self) -> None:
         """One audio session. Raises on error so _audio_loop can reconnect."""
-        vad = webrtcvad.Vad(1)
+        vad = webrtcvad.Vad(3)
         audio = pyaudio.PyAudio()
         device_index = self._find_input_device(audio)
         stream = audio.open(
