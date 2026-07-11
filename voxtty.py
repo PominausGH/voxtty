@@ -547,30 +547,46 @@ class VoxttyApp:
         last_scan = time.monotonic()
         try:
             while not self.shutdown_flag:
-                # Periodically re-scan so reconnected keyboards come back.
-                if time.monotonic() - last_scan > 5.0:
-                    refresh_devices()
-                    last_scan = time.monotonic()
+                try:
+                    # Periodically re-scan so reconnected keyboards come back.
+                    if time.monotonic() - last_scan > 5.0:
+                        refresh_devices()
+                        last_scan = time.monotonic()
 
-                for key, _ in sel.select(timeout=1.0):
-                    kb = key.fileobj
-                    try:
-                        events = kb.read()
-                    except OSError as e:
-                        # A single device vanished (Errno 19). Drop it and keep
-                        # the loop alive for the remaining keyboards.
-                        log.warning(f"Keyboard '{kb.name}' lost ({e}); will retry.")
-                        drop_device(kb)
-                        continue
-                    for event in events:
-                        if event.type != ecodes.EV_KEY:
+                    for key, _ in sel.select(timeout=1.0):
+                        kb = key.fileobj
+                        try:
+                            events = kb.read()
+                        except OSError as e:
+                            # A single device vanished (Errno 19). Drop it and
+                            # keep the loop alive for the other keyboards.
+                            log.warning(f"Keyboard '{kb.name}' lost ({e}); will retry.")
+                            drop_device(kb)
                             continue
-                        ke = evdev.categorize(event)
-                        if ke.scancode in (ecodes.KEY_LEFTALT, ecodes.KEY_RIGHTALT):
-                            self.alt_pressed = ke.keystate == ke.key_down
-                        elif ke.scancode == ecodes.KEY_D and ke.keystate == ke.key_down:
-                            if self.alt_pressed:
-                                threading.Thread(target=self.toggle_state, daemon=True).start()
+                        for event in events:
+                            if event.type != ecodes.EV_KEY:
+                                continue
+                            ke = evdev.categorize(event)
+                            if ke.scancode in (ecodes.KEY_LEFTALT, ecodes.KEY_RIGHTALT):
+                                # Autorepeat emits key_hold while Alt stays down,
+                                # so only key_up may clear this. Devices send hold
+                                # events even when they report no EV_REP.
+                                self.alt_pressed = ke.keystate != ke.key_up
+                            elif ke.scancode == ecodes.KEY_D and ke.keystate == ke.key_down:
+                                if self.alt_pressed:
+                                    threading.Thread(target=self.toggle_state, daemon=True).start()
+                except OSError as e:
+                    # Any other device-churn error — a rescan opening a device
+                    # that's mid-removal, or epoll itself faulting on a fd pulled
+                    # out from under select() — must not kill the listener (this
+                    # is what died at the ENODEV crash). Purge everything and
+                    # rescan; the live keyboards re-register, dead ones stay out
+                    # until they reconnect. An empty selector waits out its
+                    # timeout without erroring, so this never busy-loops.
+                    log.warning(f"Keyboard listener recovered from {e}; rescanning.")
+                    for kb in list(registered.values()):
+                        drop_device(kb)
+                    last_scan = 0.0
         except Exception as e:
             log.error(f"Keyboard listener error: {e}", exc_info=True)
         finally:
