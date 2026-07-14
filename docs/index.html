@@ -21,7 +21,7 @@
 <style>
   :root {
     --ground:#0B0E14; --surface:#12161F; --surface-2:#1A202B;
-    --ink:#E9EDF3; --muted:#9BA7B6; --faint:#5E6775; --border:#232B38;
+    --ink:#E9EDF3; --muted:#9BA7B6; --faint:#8892A2; --border:#232B38;
     --accent:#FF6A5A; --accent-ink:#FF8578; --accent-soft:#2A1613;
     --teal:#43B8B2;
     --mono:ui-monospace,"SF Mono","JetBrains Mono","Fira Code",Menlo,Consolas,monospace;
@@ -39,7 +39,7 @@
   }
   :root[data-theme="dark"] {
     --ground:#0B0E14; --surface:#12161F; --surface-2:#1A202B;
-    --ink:#E9EDF3; --muted:#9BA7B6; --faint:#5E6775; --border:#232B38;
+    --ink:#E9EDF3; --muted:#9BA7B6; --faint:#8892A2; --border:#232B38;
     --accent:#FF6A5A; --accent-ink:#FF8578; --accent-soft:#2A1613; --teal:#43B8B2;
     --shadow:0 2px 6px rgba(0,0,0,.3), 0 20px 50px rgba(0,0,0,.4);
   }
@@ -89,7 +89,7 @@
   .ctas { display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
   .btn { font-family:var(--mono); font-size:14.5px; font-weight:600; text-decoration:none;
     border-radius:10px; padding:13px 20px; display:inline-flex; align-items:center; gap:9px; }
-  .btn.primary { background:var(--accent); color:#fff; }
+  .btn.primary { background:#CE3E2B; color:#fff; }
   .btn.primary:hover { filter:brightness(1.06); }
   .btn.ghost { color:var(--ink); border:1px solid var(--border); background:var(--surface); }
   .btn.ghost:hover { border-color:var(--muted); }
@@ -185,6 +185,7 @@
   table.cmp tbody tr:last-child td { border-bottom:none; }
   table.cmp thead th { font-family:var(--mono); font-size:11.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--faint); background:var(--surface-2); font-weight:600; }
   table.cmp thead th.vox { color:var(--accent-ink); }
+  table.cmp tbody th { font-weight:400; color:var(--ink); }
   table.cmp td.vox { color:var(--ink); font-weight:600; }
   table.cmp td.dim { color:var(--muted); }
 
@@ -360,15 +361,15 @@
     <p class="lead">Wispr Flow is genuinely good — on Mac and Windows, in the cloud. On Linux, and when privacy isn't negotiable, that's where Voxtty lives.</p>
     <div class="cmp-wrap">
       <table class="cmp">
-        <thead><tr><th></th><th class="vox">Voxtty</th><th>Wispr Flow</th></tr></thead>
+        <thead><tr><th scope="col"></th><th class="vox" scope="col">Voxtty</th><th scope="col">Wispr Flow</th></tr></thead>
         <tbody>
-          <tr><td>Linux</td><td class="vox">Native</td><td class="dim">Not available</td></tr>
-          <tr><td>Transcription</td><td class="vox">On your machine</td><td class="dim">Cloud</td></tr>
-          <tr><td>Works offline</td><td class="vox">Yes</td><td class="dim">No</td></tr>
-          <tr><td>Audio leaves your device</td><td class="vox">Never</td><td class="dim">Always</td></tr>
-          <tr><td>Price</td><td class="vox">Free · Pro $5/mo (BYO key)</td><td class="dim">$15 / month</td></tr>
-          <tr><td>Open source</td><td class="vox">Yes</td><td class="dim">No</td></tr>
-          <tr><td>AI cleanup</td><td class="vox">Optional</td><td>Built-in</td></tr>
+          <tr><th scope="row">Linux</th><td class="vox">Native</td><td class="dim">Not available</td></tr>
+          <tr><th scope="row">Transcription</th><td class="vox">On your machine</td><td class="dim">Cloud</td></tr>
+          <tr><th scope="row">Works offline</th><td class="vox">Yes</td><td class="dim">No</td></tr>
+          <tr><th scope="row">Audio leaves your device</th><td class="vox">Never</td><td class="dim">Always</td></tr>
+          <tr><th scope="row">Price</th><td class="vox">Free · Pro $5/mo (BYO key)</td><td class="dim">$15 / month</td></tr>
+          <tr><th scope="row">Open source</th><td class="vox">Yes</td><td class="dim">No</td></tr>
+          <tr><th scope="row">AI cleanup</th><td class="vox">Optional</td><td>Built-in</td></tr>
         </tbody>
       </table>
     </div>
