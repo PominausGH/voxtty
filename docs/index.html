@@ -22,7 +22,7 @@
   @media (prefers-color-scheme: light) {
     :root {
       --ground:#F2F4F7; --surface:#FFFFFF; --surface-2:#F9FAFB;
-      --ink:#14181F; --muted:#57616E; --faint:#8A94A1; --border:#E2E6EC;
+      --ink:#14181F; --muted:#57616E; --faint:#66707E; --border:#E2E6EC;
       --accent:#DE4E3B; --accent-ink:#B63C2C; --accent-soft:#FBE6E1;
       --teal:#0E7C7B;
       --shadow:0 1px 2px rgba(20,30,45,.05), 0 16px 40px rgba(20,30,45,.09);
@@ -36,7 +36,7 @@
   }
   :root[data-theme="light"] {
     --ground:#F2F4F7; --surface:#FFFFFF; --surface-2:#F9FAFB;
-    --ink:#14181F; --muted:#57616E; --faint:#8A94A1; --border:#E2E6EC;
+    --ink:#14181F; --muted:#57616E; --faint:#66707E; --border:#E2E6EC;
     --accent:#DE4E3B; --accent-ink:#B63C2C; --accent-soft:#FBE6E1; --teal:#0E7C7B;
     --shadow:0 1px 2px rgba(20,30,45,.05), 0 16px 40px rgba(20,30,45,.09);
   }
@@ -207,6 +207,7 @@
   </nav>
 </div>
 
+<main>
 <section>
   <div class="wrap hero">
     <div>
@@ -303,7 +304,7 @@
     <p class="lead">Clone it, run the setup script, log back in. Voxtty registers as a background service with a tray icon and a hotkey.</p>
     <div class="box">
       <div class="codebar"><span>bash</span><span>Ubuntu / Wayland</span></div>
-      <pre><span class="p">$</span> git clone git@github.com:PominausGH/voxtty.git
+      <pre><span class="p">$</span> git clone https://github.com/PominausGH/voxtty.git
 <span class="p">$</span> cd voxtty
 <span class="p">$</span> ./setup.sh        <span class="c"># installs deps + the voxtty service</span></pre>
     </div>
@@ -380,6 +381,7 @@
     </div>
   </div>
 </section>
+</main>
 
 <footer>
   <div class="wrap">
