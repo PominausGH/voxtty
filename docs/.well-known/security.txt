@@ -1,0 +1,4 @@
+Contact: https://github.com/PominausGH/voxtty/security/advisories/new
+Expires: 2027-07-17T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://voxtty.com/.well-known/security.txt
