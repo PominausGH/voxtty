@@ -49,7 +49,10 @@ fi
 # Install and enable systemd user service
 echo "[6/6] Installing systemd user service..."
 mkdir -p ~/.config/systemd/user
-cp voxtty.service ~/.config/systemd/user/voxtty.service
+INSTALL_DIR="$(pwd)"
+sed -e "s|__VOXTTY_INSTALL_DIR__|$INSTALL_DIR|g" \
+    -e "s|__VOXTTY_UID__|$(id -u)|g" \
+    voxtty.service > ~/.config/systemd/user/voxtty.service
 systemctl --user daemon-reload
 systemctl --user enable voxtty.service
 systemctl --user start voxtty.service

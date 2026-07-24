@@ -4,14 +4,17 @@ After=graphical-session.target sound.target
 Wants=graphical-session.target
 
 [Service]
+# WorkingDirectory/ExecStart/UID placeholders below are filled in by setup.sh
+# at install time (sed substitution) — don't hardcode a real path here, it
+# gets copied verbatim to every installer's ~/.config/systemd/user/.
 Type=simple
-WorkingDirectory=/home/andrew/Documents/Python/Git/complete/dictation-app
-ExecStart=/home/andrew/Documents/Python/Git/complete/dictation-app/venv/bin/python /home/andrew/Documents/Python/Git/complete/dictation-app/voxtty.py
+WorkingDirectory=__VOXTTY_INSTALL_DIR__
+ExecStart=__VOXTTY_INSTALL_DIR__/venv/bin/python __VOXTTY_INSTALL_DIR__/voxtty.py
 Restart=on-failure
 RestartSec=5
 Environment=DISPLAY=:0
-Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
-Environment=YDOTOOL_SOCKET=/run/user/1000/.ydotool_socket
+Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/__VOXTTY_UID__/bus
+Environment=YDOTOOL_SOCKET=/run/user/__VOXTTY_UID__/.ydotool_socket
 Environment=PYTHONUNBUFFERED=1
 
 [Install]
