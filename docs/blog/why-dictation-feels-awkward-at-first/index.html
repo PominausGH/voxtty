@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://analytics.daintytrading.com; connect-src 'self' https://analytics.daintytrading.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'">
+<title>Why Dictation Feels Awkward at First (And How to Fix It) | Voxtty</title>
+<meta name="description" content="Dictation is a different cognitive mode than typing — here's why it feels clumsy at first and concrete drills to get past it.">
+<link rel="canonical" href="https://voxtty.com/blog/why-dictation-feels-awkward-at-first/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎙️</text></svg>">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Why Dictation Feels Awkward at First (And How to Fix It)">
+<meta property="og:description" content="Dictation is a different cognitive mode than typing — here's why it feels clumsy at first and concrete drills to get past it.">
+<meta property="og:url" content="https://voxtty.com/blog/why-dictation-feels-awkward-at-first/">
+<meta property="article:published_time" content="2026-09-02">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Why Dictation Feels Awkward at First (And How to Fix It)",
+  "description": "Dictation is a different cognitive mode than typing — here's why it feels clumsy at first and concrete drills to get past it.",
+  "url": "https://voxtty.com/blog/why-dictation-feels-awkward-at-first/",
+  "datePublished": "2026-09-02",
+  "author": { "@type": "Organization", "name": "Voxtty", "url": "https://voxtty.com" },
+  "publisher": { "@type": "Organization", "name": "Voxtty", "url": "https://voxtty.com" }
+}
+</script>
+<style>
+  :root {
+    --ground:#0B0E14; --surface:#12161F; --surface-2:#1A202B;
+    --ink:#E9EDF3; --muted:#9BA7B6; --faint:#8892A2; --border:#232B38;
+    --accent:#FF6A5A; --accent-ink:#FF8578; --accent-soft:#2A1613;
+    --teal:#43B8B2;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Fira Code",Menlo,Consolas,monospace;
+    --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --shadow:0 2px 6px rgba(0,0,0,.3), 0 20px 50px rgba(0,0,0,.4);
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --ground:#F2F4F7; --surface:#FFFFFF; --surface-2:#F9FAFB;
+      --ink:#14181F; --muted:#57616E; --faint:#66707E; --border:#E2E6EC;
+      --accent:#DE4E3B; --accent-ink:#B63C2C; --accent-soft:#FBE6E1;
+      --teal:#0E7C7B;
+      --shadow:0 1px 2px rgba(20,30,45,.05), 0 16px 40px rgba(20,30,45,.09);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:#0B0E14; --surface:#12161F; --surface-2:#1A202B;
+    --ink:#E9EDF3; --muted:#9BA7B6; --faint:#8892A2; --border:#232B38;
+    --accent:#FF6A5A; --accent-ink:#FF8578; --accent-soft:#2A1613; --teal:#43B8B2;
+    --shadow:0 2px 6px rgba(0,0,0,.3), 0 20px 50px rgba(0,0,0,.4);
+  }
+  :root[data-theme="light"] {
+    --ground:#F2F4F7; --surface:#FFFFFF; --surface-2:#F9FAFB;
+    --ink:#14181F; --muted:#57616E; --faint:#66707E; --border:#E2E6EC;
+    --accent:#DE4E3B; --accent-ink:#B63C2C; --accent-soft:#FBE6E1; --teal:#0E7C7B;
+    --shadow:0 1px 2px rgba(20,30,45,.05), 0 16px 40px rgba(20,30,45,.09);
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--ground); color:var(--ink); font-family:var(--sans);
+    line-height:1.6; -webkit-font-smoothing:antialiased; }
+  a { color:inherit; }
+  .wrap { max-width:760px; margin:0 auto; padding:0 clamp(18px,4vw,36px); }
+  nav { display:flex; align-items:center; justify-content:space-between; padding:20px 0;
+    border-bottom:1px solid var(--border); max-width:1060px; margin:0 auto; padding-left:clamp(18px,4vw,36px); padding-right:clamp(18px,4vw,36px); }
+  .brand { font-family:var(--mono); font-size:19px; font-weight:600; letter-spacing:-.01em; text-decoration:none; color:var(--ink); }
+  .brand .cursor { display:inline-block; width:.6ch; color:var(--accent); }
+  .navlinks { display:flex; gap:22px; align-items:center; font-size:14px; }
+  .navlinks a { color:var(--muted); text-decoration:none; }
+  .navlinks a:hover, .navlinks a.active { color:var(--ink); }
+  .ghbtn { font-family:var(--mono); font-size:13px; border:1px solid var(--border);
+    border-radius:8px; padding:7px 13px; color:var(--ink); text-decoration:none; background:var(--surface); }
+  .breadcrumb { font-family:var(--mono); font-size:12.5px; color:var(--faint); margin:40px 0 18px; }
+  .breadcrumb a { color:var(--faint); }
+  .breadcrumb a:hover { color:var(--muted); }
+  .tag { display:inline-block; font-family:var(--mono); font-size:12px; color:var(--accent-ink);
+    background:var(--accent-soft); border-radius:999px; padding:4px 11px; margin-bottom:16px; }
+  h1 { font-size:clamp(28px,4.6vw,42px); line-height:1.1; letter-spacing:-.03em; margin:0 0 18px;
+    font-weight:700; text-wrap:balance; }
+  .meta { font-family:var(--mono); font-size:13px; color:var(--faint); display:flex; gap:16px; margin-bottom:44px; }
+  .body { padding-bottom:64px; }
+  .body p { color:var(--muted); font-size:17px; line-height:1.8; margin:0 0 22px; }
+  .body h2 { font-size:1.4rem; font-weight:700; letter-spacing:-.02em; margin:42px 0 14px; color:var(--ink); }
+  .body h3 { font-size:1.1rem; font-weight:600; margin:28px 0 10px; color:var(--ink); }
+  .body ul, .body ol { margin:0 0 22px 22px; color:var(--muted); font-size:17px; line-height:1.8; }
+  .body li { margin-bottom:8px; }
+  .body strong { color:var(--ink); font-weight:600; }
+  .body a { color:var(--accent-ink); }
+  .body a:hover { text-decoration:underline; }
+  .body blockquote { border-left:3px solid var(--accent); padding-left:20px; margin:28px 0; color:var(--faint); font-style:italic; }
+  .body code { font-family:var(--mono); font-size:.9em; background:var(--surface-2); padding:2px 6px; border-radius:4px; }
+  .cta { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:28px;
+    margin:16px 0 48px; box-shadow:var(--shadow); }
+  .cta h3 { margin:0 0 8px; font-size:18px; }
+  .cta p { color:var(--muted); margin:0 0 18px; font-size:15px; }
+  .btn { font-family:var(--mono); font-size:14px; font-weight:600; text-decoration:none;
+    border-radius:10px; padding:11px 18px; display:inline-flex; align-items:center; gap:9px;
+    background:#CE3E2B; color:#fff; }
+  .btn:hover { filter:brightness(1.06); }
+  .back-link { display:inline-flex; align-items:center; gap:6px; color:var(--faint); font-family:var(--mono);
+    font-size:13px; text-decoration:none; }
+  .back-link:hover { color:var(--muted); }
+  footer { border-top:1px solid var(--border); padding:36px 0 56px; max-width:1060px; margin:0 auto; }
+  footer .wrap { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px; padding:0 clamp(18px,4vw,36px); }
+  footer .brand { font-size:16px; }
+  footer .meta { font-family:var(--mono); font-size:12.5px; color:var(--faint); }
+  footer a { color:var(--muted); text-decoration:none; font-size:14px; }
+  footer a:hover { color:var(--ink); }
+  @media(max-width:700px) { .navlinks .hide { display:none; } }
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="brand">voxtty<span class="cursor">.</span></a>
+  <div class="navlinks">
+    <a href="/blog/" class="active">Blog</a>
+    <a href="/#pricing" class="hide">Pricing</a>
+    <a class="ghbtn" href="https://github.com/PominausGH/voxtty">GitHub ↗</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="breadcrumb"><a href="/blog/">Blog</a> / Dictation</div>
+  <span class="tag">Dictation</span>
+  <h1>Why Dictation Feels Awkward at First (And How to Fix It)</h1>
+  <div class="meta">
+    <span>2 September 2026</span>
+    <span>5 min read</span>
+  </div>
+
+  <div class="body">
+    <p>Dictation feels awkward at first because typing lets you edit as you compose — backspace is one keystroke away — while speaking forces you to commit to a sentence before you know how it ends. That's not a skill you lack; it's a different cognitive mode, and it takes deliberate practice to build, not just more attempts at dictating your usual prose.</p>
+
+<p>Most people try dictation once, produce three rambling, half-finished sentences, and conclude it doesn't work for them. What actually happened is they tried to think and edit in real time while also speaking linearly, which is a much harder task than typing the same thought, because typing gives you a visual buffer to revise before you commit.</p>
+
+<h2>Why typing and talking use different muscles</h2>
+
+<p>When you type, you're composing in short, revisable bursts. You write a clause, glance at it, adjust a word, keep going. Your eyes and your editing brain are in a tight loop with your hands. Most people never notice how much micro-editing they do until it's gone.</p>
+
+<p>Speaking removes that loop. You have to hold the shape of a sentence in your head before you say it, because once it's out, it's out — there's no cursor to go back and fix a word mid-clause without stopping and restarting. This is the same skill involved in public speaking or dictating a letter to someone taking notes: composing linearly, in complete thoughts, rather than assembling text incrementally.</p>
+
+<p>The result is that your first few dictation sessions will produce rougher text than your typing does, even though you're a competent writer. That's not a sign dictation doesn't suit you — it's a sign you're using a muscle that typing let you neglect for years.</p>
+
+<h2>Practice techniques that actually help</h2>
+
+<p>Vague advice like "just get used to it" doesn't move the needle. What does is treating dictation as a skill with specific drills, the same way you'd approach touch typing or a new instrument.</p>
+
+<p><strong>Dictate an outline first, then the prose.</strong> Before dictating a paragraph, say three or four short phrases capturing the structure — "problem, why it matters, the fix, one caveat." Having the shape decided removes the hardest part of linear composition: figuring out where the sentence is going while you're saying it.</p>
+
+<p><strong>Say punctuation explicitly, at least at first.</strong> Say "comma," "full stop," "new paragraph" out loud rather than relying on the model to infer pacing from pauses. It feels stilted for the first few sessions, but it forces you to think in sentence units, which is exactly the skill dictation requires. You can drop it once the habit sets in.</p>
+
+<p><strong>Accept a rougher first pass.</strong> Don't try to dictate publish-ready prose. Dictate the idea, then edit the transcript the way you'd edit a first draft from someone else. Separating "get the thought down" from "make it read well" is the same discipline good writers already use for typed drafts — dictation just makes the two stages more obviously separate.</p>
+
+<p><strong>Start with low-stakes text.</strong> Commit messages, Slack replies, code comments, quick notes to yourself. These have low structural demands, so you can focus purely on the mechanics of speaking in complete thoughts without also worrying about getting an email exactly right.</p>
+
+<p><strong>Re-read out loud before you speak a sentence you're unsure of.</strong> If you're not sure how a sentence should end, say it in your head first, the way you'd silently draft a tricky line before typing it. This closes some of the gap between the composition loop typing gives you and the one-shot nature of speech.</p>
+
+<p>On Linux, the mechanics matter less than the habit, but it helps if the tool gets out of your way. Voxtty runs as a systemd user service — press Alt+D, speak, and the transcript gets typed into whatever has focus, transcribed on-device with faster-whisper so there's no round trip to a cloud API adding latency while you're mid-thought. <a href="https://voxtty.com">Try Voxtty free</a> if you want to run these drills without setting up anything beyond a hotkey.</p>
+
+<h2>Where this still breaks down</h2>
+
+<p>Some of the awkwardness won't fully disappear, and it's worth knowing which parts are permanent rather than a skill issue. Technical jargon, acronyms, and code identifiers are genuinely harder for any speech model — Whisper included — because they're low-frequency in training data and easy to mishear against similar-sounding words. Expect to correct these by hand regardless of practice.</p>
+
+<p>Long, structurally complex sentences with multiple subordinate clauses are also harder to dictate cleanly than to type, because you're holding more grammatical state in your head with no visual scaffold. If you catch yourself losing the thread mid-sentence, that's a sign to dictate shorter, then combine clauses in the edit pass rather than trying to nail the long sentence in one go.</p>
+
+<p>Background noise and strong accents remain real accuracy hits for on-device models — a busy office or a video call in the background will degrade transcription quality more than it degrades your own comprehension. None of this is specific to Voxtty; it's a property of current speech recognition, cloud or local.</p>
+
+<h2>One thing to do today</h2>
+
+<p>Pick one paragraph you'd normally type — a Slack message, a commit message, a short email — and dictate it instead, saying punctuation out loud and accepting whatever comes out. Don't edit until you're done speaking. That single rep, repeated a handful of times this week, does more than reading another article about why dictation feels strange.</p>
+
+    <div class="cta">
+      <h3>Try Voxtty free</h3>
+      <p>Local-first voice dictation for Linux. Press Alt+D, speak, and your words land in whatever app has focus — nothing leaves your machine.</p>
+      <a href="https://voxtty.com" class="btn">Try Voxtty free →</a>
+    </div>
+
+    <div style="margin-top:56px;padding-top:40px;border-top:1px solid rgba(128,128,128,.25)"><h3 style="font-size:1.1rem;font-weight:700;margin-bottom:20px">Related Articles</h3><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px"><a href="https://voxtty.com/blog/dictate-other-languages-linux-whisper/" style="display:block;padding:18px;border:1px solid rgba(128,128,128,.25);border-radius:12px;text-decoration:none;color:inherit"><span style="font-size:.75rem;font-weight:600;color:#e11d48;text-transform:uppercase;letter-spacing:.03em">Dictation</span><div style="font-weight:700;margin-top:6px;line-height:1.35">Can You Dictate in Other Languages on Linux? Yes, With Limits</div></a><a href="https://voxtty.com/blog/how-long-to-get-good-at-voice-dictation/" style="display:block;padding:18px;border:1px solid rgba(128,128,128,.25);border-radius:12px;text-decoration:none;color:inherit"><span style="font-size:.75rem;font-weight:600;color:#e11d48;text-transform:uppercase;letter-spacing:.03em">Dictation</span><div style="font-weight:700;margin-top:6px;line-height:1.35">How Long Does It Take to Get Good at Voice Dictation?</div></a><a href="https://voxtty.com/blog/whisper-accuracy-code-comments-commit-messages/" style="display:block;padding:18px;border:1px solid rgba(128,128,128,.25);border-radius:12px;text-decoration:none;color:inherit"><span style="font-size:.75rem;font-weight:600;color:#e11d48;text-transform:uppercase;letter-spacing:.03em">Dictation</span><div style="font-weight:700;margin-top:6px;line-height:1.35">How Accurate Is Whisper for Code Comments and Commit Messages?</div></a><a href="https://voxtty.com/blog/voice-activity-detection-dictation/" style="display:block;padding:18px;border:1px solid rgba(128,128,128,.25);border-radius:12px;text-decoration:none;color:inherit"><span style="font-size:.75rem;font-weight:600;color:#e11d48;text-transform:uppercase;letter-spacing:.03em">Dictation</span><div style="font-weight:700;margin-top:6px;line-height:1.35">What Is Voice Activity Detection, and Why Dictation Needs It</div></a></div></div>
+
+    <a href="/blog/" class="back-link">← Back to blog</a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="brand">voxtty<span class="cursor">.</span></div>
+    <a href="https://github.com/PominausGH/voxtty">GitHub ↗</a>
+    <a href="/privacy.html">Privacy</a>
+    <span class="meta">local-first · linux-native · open-core</span>
+  </div>
+</footer>
+</body>
+</html>

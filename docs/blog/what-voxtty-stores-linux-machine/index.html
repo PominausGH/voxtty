@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://analytics.daintytrading.com; connect-src 'self' https://analytics.daintytrading.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'">
+<title>What Voxtty Stores on Your Linux Machine | Voxtty</title>
+<meta name="description" content="Voxtty stores essential operational data like cached Whisper models, configuration, and optional text history locally; no audio ever leaves your device.">
+<link rel="canonical" href="https://voxtty.com/blog/what-voxtty-stores-linux-machine/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎙️</text></svg>">
+<meta property="og:type" content="article">
+<meta property="og:title" content="What Voxtty Stores on Your Linux Machine">
+<meta property="og:description" content="Voxtty stores essential operational data like cached Whisper models, configuration, and optional text history locally; no audio ever leaves your device.">
+<meta property="og:url" content="https://voxtty.com/blog/what-voxtty-stores-linux-machine/">
+<meta property="article:published_time" content="2026-09-09">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "What Voxtty Stores on Your Linux Machine",
+  "description": "Voxtty stores essential operational data like cached Whisper models, configuration, and optional text history locally; no audio ever leaves your device.",
+  "url": "https://voxtty.com/blog/what-voxtty-stores-linux-machine/",
+  "datePublished": "2026-09-09",
+  "author": { "@type": "Organization", "name": "Voxtty", "url": "https://voxtty.com" },
+  "publisher": { "@type": "Organization", "name": "Voxtty", "url": "https://voxtty.com" }
+}
+</script>
+<style>
+  :root {
+    --ground:#0B0E14; --surface:#12161F; --surface-2:#1A202B;
+    --ink:#E9EDF3; --muted:#9BA7B6; --faint:#8892A2; --border:#232B38;
+    --accent:#FF6A5A; --accent-ink:#FF8578; --accent-soft:#2A1613;
+    --teal:#43B8B2;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Fira Code",Menlo,Consolas,monospace;
+    --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --shadow:0 2px 6px rgba(0,0,0,.3), 0 20px 50px rgba(0,0,0,.4);
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --ground:#F2F4F7; --surface:#FFFFFF; --surface-2:#F9FAFB;
+      --ink:#14181F; --muted:#57616E; --faint:#66707E; --border:#E2E6EC;
+      --accent:#DE4E3B; --accent-ink:#B63C2C; --accent-soft:#FBE6E1;
+      --teal:#0E7C7B;
+      --shadow:0 1px 2px rgba(20,30,45,.05), 0 16px 40px rgba(20,30,45,.09);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:#0B0E14; --surface:#12161F; --surface-2:#1A202B;
+    --ink:#E9EDF3; --muted:#9BA7B6; --faint:#8892A2; --border:#232B38;
+    --accent:#FF6A5A; --accent-ink:#FF8578; --accent-soft:#2A1613; --teal:#43B8B2;
+    --shadow:0 2px 6px rgba(0,0,0,.3), 0 20px 50px rgba(0,0,0,.4);
+  }
+  :root[data-theme="light"] {
+    --ground:#F2F4F7; --surface:#FFFFFF; --surface-2:#F9FAFB;
+    --ink:#14181F; --muted:#57616E; --faint:#66707E; --border:#E2E6EC;
+    --accent:#DE4E3B; --accent-ink:#B63C2C; --accent-soft:#FBE6E1; --teal:#0E7C7B;
+    --shadow:0 1px 2px rgba(20,30,45,.05), 0 16px 40px rgba(20,30,45,.09);
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--ground); color:var(--ink); font-family:var(--sans);
+    line-height:1.6; -webkit-font-smoothing:antialiased; }
+  a { color:inherit; }
+  .wrap { max-width:760px; margin:0 auto; padding:0 clamp(18px,4vw,36px); }
+  nav { display:flex; align-items:center; justify-content:space-between; padding:20px 0;
+    border-bottom:1px solid var(--border); max-width:1060px; margin:0 auto; padding-left:clamp(18px,4vw,36px); padding-right:clamp(18px,4vw,36px); }
+  .brand { font-family:var(--mono); font-size:19px; font-weight:600; letter-spacing:-.01em; text-decoration:none; color:var(--ink); }
+  .brand .cursor { display:inline-block; width:.6ch; color:var(--accent); }
+  .navlinks { display:flex; gap:22px; align-items:center; font-size:14px; }
+  .navlinks a { color:var(--muted); text-decoration:none; }
+  .navlinks a:hover, .navlinks a.active { color:var(--ink); }
+  .ghbtn { font-family:var(--mono); font-size:13px; border:1px solid var(--border);
+    border-radius:8px; padding:7px 13px; color:var(--ink); text-decoration:none; background:var(--surface); }
+  .breadcrumb { font-family:var(--mono); font-size:12.5px; color:var(--faint); margin:40px 0 18px; }
+  .breadcrumb a { color:var(--faint); }
+  .breadcrumb a:hover { color:var(--muted); }
+  .tag { display:inline-block; font-family:var(--mono); font-size:12px; color:var(--accent-ink);
+    background:var(--accent-soft); border-radius:999px; padding:4px 11px; margin-bottom:16px; }
+  h1 { font-size:clamp(28px,4.6vw,42px); line-height:1.1; letter-spacing:-.03em; margin:0 0 18px;
+    font-weight:700; text-wrap:balance; }
+  .meta { font-family:var(--mono); font-size:13px; color:var(--faint); display:flex; gap:16px; margin-bottom:44px; }
+  .body { padding-bottom:64px; }
+  .body p { color:var(--muted); font-size:17px; line-height:1.8; margin:0 0 22px; }
+  .body h2 { font-size:1.4rem; font-weight:700; letter-spacing:-.02em; margin:42px 0 14px; color:var(--ink); }
+  .body h3 { font-size:1.1rem; font-weight:600; margin:28px 0 10px; color:var(--ink); }
+  .body ul, .body ol { margin:0 0 22px 22px; color:var(--muted); font-size:17px; line-height:1.8; }
+  .body li { margin-bottom:8px; }
+  .body strong { color:var(--ink); font-weight:600; }
+  .body a { color:var(--accent-ink); }
+  .body a:hover { text-decoration:underline; }
+  .body blockquote { border-left:3px solid var(--accent); padding-left:20px; margin:28px 0; color:var(--faint); font-style:italic; }
+  .body code { font-family:var(--mono); font-size:.9em; background:var(--surface-2); padding:2px 6px; border-radius:4px; }
+  .cta { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:28px;
+    margin:16px 0 48px; box-shadow:var(--shadow); }
+  .cta h3 { margin:0 0 8px; font-size:18px; }
+  .cta p { color:var(--muted); margin:0 0 18px; font-size:15px; }
+  .btn { font-family:var(--mono); font-size:14px; font-weight:600; text-decoration:none;
+    border-radius:10px; padding:11px 18px; display:inline-flex; align-items:center; gap:9px;
+    background:#CE3E2B; color:#fff; }
+  .btn:hover { filter:brightness(1.06); }
+  .back-link { display:inline-flex; align-items:center; gap:6px; color:var(--faint); font-family:var(--mono);
+    font-size:13px; text-decoration:none; }
+  .back-link:hover { color:var(--muted); }
+  footer { border-top:1px solid var(--border); padding:36px 0 56px; max-width:1060px; margin:0 auto; }
+  footer .wrap { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px; padding:0 clamp(18px,4vw,36px); }
+  footer .brand { font-size:16px; }
+  footer .meta { font-family:var(--mono); font-size:12.5px; color:var(--faint); }
+  footer a { color:var(--muted); text-decoration:none; font-size:14px; }
+  footer a:hover { color:var(--ink); }
+  @media(max-width:700px) { .navlinks .hide { display:none; } }
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="brand">voxtty<span class="cursor">.</span></a>
+  <div class="navlinks">
+    <a href="/blog/" class="active">Blog</a>
+    <a href="/#pricing" class="hide">Pricing</a>
+    <a class="ghbtn" href="https://github.com/PominausGH/voxtty">GitHub ↗</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="breadcrumb"><a href="/blog/">Blog</a> / Privacy</div>
+  <span class="tag">Privacy</span>
+  <h1>What Voxtty Stores on Your Linux Machine</h1>
+  <div class="meta">
+    <span>9 September 2026</span>
+    <span>5 min read</span>
+  </div>
+
+  <div class="body">
+    <p>A local voice dictation application like Voxtty stores only essential operational data on your Linux machine: primarily cached speech models, configuration files, and an optional local transcript history. Crucially, no audio data ever leaves the device. Only anonymized transcript text can leave, and only if the user explicitly opts into and configures an external AI cleanup service.</p>
+
+<h2>Why On-Device Data Storage Matters</h2>
+<p>The distinction between local and cloud-based data handling is fundamental for privacy-conscious users. Cloud dictation services require sending your audio stream over the internet to a remote server for processing. This introduces multiple privacy vectors: your voice data resides on third-party infrastructure, subject to their retention policies, potential data breaches, or government subpoenas. An API outage can render the service unusable, and the opaque nature of cloud processing makes auditing impossible.</p>
+
+<p>Storing data exclusively on-device mitigates these risks. It grants the user complete control over their sensitive voice data, ensuring that raw audio never traverses external networks. This local-first approach means you own and can audit every byte of data generated by the application. Your dictation capabilities remain robust even without an internet connection, removing reliance on external service availability.</p>
+
+<h2>Voxtty's Practical Approach to Local Data</h2>
+<p>Voxtty, running as a systemd user service, adheres strictly to a local-first data model. When you press Alt+D, speak, and release, the process is contained within your machine. The Voice Activity Detection (VAD) algorithm identifies speech segments, which are then transcribed by the faster-whisper engine using locally stored models. The resulting text is typed into the focused application via `ydotool`, a utility compatible with Wayland and X11.</p>
+
+<p>Here's a breakdown of what Voxtty stores and where, typically following the XDG Base Directory Specification:</p>
+<ul>
+    <li><strong>Whisper Models:</strong> The largest data footprint comes from the pre-trained Whisper speech-to-text models. These are downloaded once to a directory like <code>~/.cache/faster-whisper/</code>. Depending on the model size selected (e.g., <code>small</code>, <code>medium</code>, <code>large</code>), this can range from several hundred megabytes to multiple gigabytes. These files are static and only updated if you choose a different model or if the <code>faster-whisper</code> library itself is updated.</li>
+    <li><strong>Configuration Files:</strong> User preferences, hotkey assignments, chosen Whisper model, and API keys for optional services are stored in a TOML file, typically at <code>~/.config/voxtty/config.toml</code>. This file is plain text and directly editable, providing transparent control over the application's behaviour.</li>
+    <li><strong>Transcript History (Optional):</strong> Voxtty offers an opt-in feature to save a local history of your dictated text. If enabled, this history is stored in a SQLite database, usually located at <code>~/.local/share/voxtty/history.db</code>. This database contains only the transcribed text, timestamps, and potentially the application it was dictated into—never the audio. Users can easily manage or clear this history through the Voxtty interface or by deleting the file directly.</li>
+    <li><strong>Application Logs:</strong> For debugging and operational monitoring, Voxtty generates logs. These might be directed to the systemd journal (accessible via <code>journalctl --user -u voxtty.service</code>) or to a file such as <code>~/.local/state/voxtty/voxtty.log</code>. These logs record application events, errors, and performance metrics, but do not contain sensitive audio or transcript data by default.</li>
+    <li><strong>Temporary Audio:</strong> During active dictation, short segments of audio are buffered in RAM for VAD processing and transcription. Any temporary files created for audio processing are typically very short-lived in <code>/tmp</code> and are immediately discarded and securely deleted after transcription completes. Raw audio is never persistently stored on disk or transferred off-device.</li>
+</ul>
+
+<p>The only scenario where data leaves your machine is through Voxtty's optional AI cleanup feature. If enabled, the *transcript text* (after local transcription, never the audio) is sent to a third-party API, such as Claude. This requires you to explicitly provide your own API key. The cleaned text is then returned and typed into your application. This opt-in process is clearly delineated, and users retain full control over whether to engage external services for text refinement.</p>
+
+<h2>Edge Cases and Honest Limitations</h2>
+<p>While on-device data storage offers significant privacy advantages, it comes with specific considerations. The Whisper models, particularly the larger ones, demand substantial disk space and RAM. A <code>large-v3</code> model, for instance, can consume over 3GB of disk space and require several gigabytes of GPU VRAM or system RAM for efficient inference. Users with limited resources might need to opt for smaller, less accurate models, impacting transcription quality.</p>
+
+<p>The privacy of the transcript history, if enabled, is contingent on the security of your local machine. If your system is compromised, the text stored in <code>~/.local/share/voxtty/history.db</code> could be exposed. Users must manage this data like any other sensitive local file. Similarly, if you opt for AI cleanup, your API key is stored locally in <code>config.toml</code>. While Voxtty does not send this key off-device, its local security remains your responsibility. The external AI service will process the text you send, introducing a new privacy boundary for that specific text data.</p>
+
+<p>Furthermore, while Voxtty ensures audio never leaves your device, the accuracy of local Whisper models can be influenced by factors like strong accents, background noise, or highly technical jargon. These are inherent limitations of the models themselves, which might perform differently compared to proprietary cloud services that often leverage larger, constantly evolving datasets and more powerful compute resources.</p>
+
+<h2>One Thing to Do Today</h2>
+<p>To understand Voxtty's local data footprint firsthand, install the application and try dictating a paragraph. Afterwards, inspect your <code>~/.cache/faster-whisper/</code> directory to observe the downloaded model files. Then, list the contents of <code>~/.config/voxtty/</code> and <code>~/.local/share/voxtty/</code> to see the configuration and any optional history files created. This direct inspection provides tangible evidence of what resides on your machine. Try Voxtty free by visiting <a href="https://voxtty.com">https://voxtty.com</a>.</p>
+
+    <div class="cta">
+      <h3>Try Voxtty free</h3>
+      <p>Local-first voice dictation for Linux. Press Alt+D, speak, and your words land in whatever app has focus — nothing leaves your machine.</p>
+      <a href="https://voxtty.com" class="btn">Try Voxtty free →</a>
+    </div>
+
+    <div style="margin-top:56px;padding-top:40px;border-top:1px solid rgba(128,128,128,.25)"><h3 style="font-size:1.1rem;font-weight:700;margin-bottom:20px">Related Articles</h3><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px"><a href="https://voxtty.com/blog/is-it-safe-to-dictate-passwords-sensitive-info/" style="display:block;padding:18px;border:1px solid rgba(128,128,128,.25);border-radius:12px;text-decoration:none;color:inherit"><span style="font-size:.75rem;font-weight:600;color:#e11d48;text-transform:uppercase;letter-spacing:.03em">Privacy</span><div style="font-weight:700;margin-top:6px;line-height:1.35">Is It Safe to Dictate Passwords Out Loud on Linux?</div></a><a href="https://voxtty.com/blog/why-voice-dictation-doesnt-need-the-cloud/" style="display:block;padding:18px;border:1px solid rgba(128,128,128,.25);border-radius:12px;text-decoration:none;color:inherit"><span style="font-size:.75rem;font-weight:600;color:#e11d48;text-transform:uppercase;letter-spacing:.03em">Privacy</span><div style="font-weight:700;margin-top:6px;line-height:1.35">Why Voice Dictation Doesn&#x27;t Need the Cloud Anymore</div></a><a href="https://voxtty.com/blog/why-dictation-feels-awkward-at-first/" style="display:block;padding:18px;border:1px solid rgba(128,128,128,.25);border-radius:12px;text-decoration:none;color:inherit"><span style="font-size:.75rem;font-weight:600;color:#e11d48;text-transform:uppercase;letter-spacing:.03em">Dictation</span><div style="font-weight:700;margin-top:6px;line-height:1.35">Why Dictation Feels Awkward at First (And How to Fix It)</div></a><a href="https://voxtty.com/blog/dictate-other-languages-linux-whisper/" style="display:block;padding:18px;border:1px solid rgba(128,128,128,.25);border-radius:12px;text-decoration:none;color:inherit"><span style="font-size:.75rem;font-weight:600;color:#e11d48;text-transform:uppercase;letter-spacing:.03em">Dictation</span><div style="font-weight:700;margin-top:6px;line-height:1.35">Can You Dictate in Other Languages on Linux? Yes, With Limits</div></a></div></div>
+
+    <a href="/blog/" class="back-link">← Back to blog</a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="brand">voxtty<span class="cursor">.</span></div>
+    <a href="https://github.com/PominausGH/voxtty">GitHub ↗</a>
+    <a href="/privacy.html">Privacy</a>
+    <span class="meta">local-first · linux-native · open-core</span>
+  </div>
+</footer>
+</body>
+</html>
