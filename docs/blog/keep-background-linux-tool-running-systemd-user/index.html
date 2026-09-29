@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://analytics.daintytrading.com; connect-src 'self' https://analytics.daintytrading.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'">
+<title>How do I keep a background tool running with systemd --user? | Voxtty</title>
+<meta name="description" content="Run a hotkey-triggered daemon as a systemd user service: auto-restart on crash, journalctl debugging, and why user scope beats a system service for mic access.">
+<link rel="canonical" href="https://voxtty.com/blog/keep-background-linux-tool-running-systemd-user/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎙️</text></svg>">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How do I keep a background tool running with systemd --user?">
+<meta property="og:description" content="Run a hotkey-triggered daemon as a systemd user service: auto-restart on crash, journalctl debugging, and why user scope beats a system service for mic access.">
+<meta property="og:url" content="https://voxtty.com/blog/keep-background-linux-tool-running-systemd-user/">
+<meta property="article:published_time" content="2026-09-30">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "How do I keep a background tool running with systemd --user?",
+  "description": "Run a hotkey-triggered daemon as a systemd user service: auto-restart on crash, journalctl debugging, and why user scope beats a system service for mic access.",
+  "url": "https://voxtty.com/blog/keep-background-linux-tool-running-systemd-user/",
+  "datePublished": "2026-09-30",
+  "author": { "@type": "Organization", "name": "Voxtty", "url": "https://voxtty.com" },
+  "publisher": { "@type": "Organization", "name": "Voxtty", "url": "https://voxtty.com" }
+}
+</script>
+<style>
+  :root {
+    --ground:#0B0E14; --surface:#12161F; --surface-2:#1A202B;
+    --ink:#E9EDF3; --muted:#9BA7B6; --faint:#8892A2; --border:#232B38;
+    --accent:#FF6A5A; --accent-ink:#FF8578; --accent-soft:#2A1613;
+    --teal:#43B8B2;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Fira Code",Menlo,Consolas,monospace;
+    --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --shadow:0 2px 6px rgba(0,0,0,.3), 0 20px 50px rgba(0,0,0,.4);
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --ground:#F2F4F7; --surface:#FFFFFF; --surface-2:#F9FAFB;
+      --ink:#14181F; --muted:#57616E; --faint:#66707E; --border:#E2E6EC;
+      --accent:#DE4E3B; --accent-ink:#B63C2C; --accent-soft:#FBE6E1;
+      --teal:#0E7C7B;
+      --shadow:0 1px 2px rgba(20,30,45,.05), 0 16px 40px rgba(20,30,45,.09);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:#0B0E14; --surface:#12161F; --surface-2:#1A202B;
+    --ink:#E9EDF3; --muted:#9BA7B6; --faint:#8892A2; --border:#232B38;
+    --accent:#FF6A5A; --accent-ink:#FF8578; --accent-soft:#2A1613; --teal:#43B8B2;
+    --shadow:0 2px 6px rgba(0,0,0,.3), 0 20px 50px rgba(0,0,0,.4);
+  }
+  :root[data-theme="light"] {
+    --ground:#F2F4F7; --surface:#FFFFFF; --surface-2:#F9FAFB;
+    --ink:#14181F; --muted:#57616E; --faint:#66707E; --border:#E2E6EC;
+    --accent:#DE4E3B; --accent-ink:#B63C2C; --accent-soft:#FBE6E1; --teal:#0E7C7B;
+    --shadow:0 1px 2px rgba(20,30,45,.05), 0 16px 40px rgba(20,30,45,.09);
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--ground); color:var(--ink); font-family:var(--sans);
+    line-height:1.6; -webkit-font-smoothing:antialiased; }
+  a { color:inherit; }
+  .wrap { max-width:760px; margin:0 auto; padding:0 clamp(18px,4vw,36px); }
+  nav { display:flex; align-items:center; justify-content:space-between; padding:20px 0;
+    border-bottom:1px solid var(--border); max-width:1060px; margin:0 auto; padding-left:clamp(18px,4vw,36px); padding-right:clamp(18px,4vw,36px); }
+  .brand { font-family:var(--mono); font-size:19px; font-weight:600; letter-spacing:-.01em; text-decoration:none; color:var(--ink); }
+  .brand .cursor { display:inline-block; width:.6ch; color:var(--accent); }
+  .navlinks { display:flex; gap:22px; align-items:center; font-size:14px; }
+  .navlinks a { color:var(--muted); text-decoration:none; }
+  .navlinks a:hover, .navlinks a.active { color:var(--ink); }
+  .ghbtn { font-family:var(--mono); font-size:13px; border:1px solid var(--border);
+    border-radius:8px; padding:7px 13px; color:var(--ink); text-decoration:none; background:var(--surface); }
+  .breadcrumb { font-family:var(--mono); font-size:12.5px; color:var(--faint); margin:40px 0 18px; }
+  .breadcrumb a { color:var(--faint); }
+  .breadcrumb a:hover { color:var(--muted); }
+  .tag { display:inline-block; font-family:var(--mono); font-size:12px; color:var(--accent-ink);
+    background:var(--accent-soft); border-radius:999px; padding:4px 11px; margin-bottom:16px; }
+  h1 { font-size:clamp(28px,4.6vw,42px); line-height:1.1; letter-spacing:-.03em; margin:0 0 18px;
+    font-weight:700; text-wrap:balance; }
+  .meta { font-family:var(--mono); font-size:13px; color:var(--faint); display:flex; gap:16px; margin-bottom:44px; }
+  .body { padding-bottom:64px; }
+  .body p { color:var(--muted); font-size:17px; line-height:1.8; margin:0 0 22px; }
+  .body h2 { font-size:1.4rem; font-weight:700; letter-spacing:-.02em; margin:42px 0 14px; color:var(--ink); }
+  .body h3 { font-size:1.1rem; font-weight:600; margin:28px 0 10px; color:var(--ink); }
+  .body ul, .body ol { margin:0 0 22px 22px; color:var(--muted); font-size:17px; line-height:1.8; }
+  .body li { margin-bottom:8px; }
+  .body strong { color:var(--ink); font-weight:600; }
+  .body a { color:var(--accent-ink); }
+  .body a:hover { text-decoration:underline; }
+  .body blockquote { border-left:3px solid var(--accent); padding-left:20px; margin:28px 0; color:var(--faint); font-style:italic; }
+  .body code { font-family:var(--mono); font-size:.9em; background:var(--surface-2); padding:2px 6px; border-radius:4px; }
+  .cta { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:28px;
+    margin:16px 0 48px; box-shadow:var(--shadow); }
+  .cta h3 { margin:0 0 8px; font-size:18px; }
+  .cta p { color:var(--muted); margin:0 0 18px; font-size:15px; }
+  .btn { font-family:var(--mono); font-size:14px; font-weight:600; text-decoration:none;
+    border-radius:10px; padding:11px 18px; display:inline-flex; align-items:center; gap:9px;
+    background:#CE3E2B; color:#fff; }
+  .btn:hover { filter:brightness(1.06); }
+  .back-link { display:inline-flex; align-items:center; gap:6px; color:var(--faint); font-family:var(--mono);
+    font-size:13px; text-decoration:none; }
+  .back-link:hover { color:var(--muted); }
+  footer { border-top:1px solid var(--border); padding:36px 0 56px; max-width:1060px; margin:0 auto; }
+  footer .wrap { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px; padding:0 clamp(18px,4vw,36px); }
+  footer .brand { font-size:16px; }
+  footer .meta { font-family:var(--mono); font-size:12.5px; color:var(--faint); }
+  footer a { color:var(--muted); text-decoration:none; font-size:14px; }
+  footer a:hover { color:var(--ink); }
+  @media(max-width:700px) { .navlinks .hide { display:none; } }
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="brand">voxtty<span class="cursor">.</span></a>
+  <div class="navlinks">
+    <a href="/blog/" class="active">Blog</a>
+    <a href="/#pricing" class="hide">Pricing</a>
+    <a class="ghbtn" href="https://github.com/PominausGH/voxtty">GitHub ↗</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="breadcrumb"><a href="/blog/">Blog</a> / Linux</div>
+  <span class="tag">Linux</span>
+  <h1>How do I keep a background tool running with systemd --user?</h1>
+  <div class="meta">
+    <span>30 September 2026</span>
+    <span>6 min read</span>
+  </div>
+
+  <div class="body">
+    <p>Write a unit file in <code>~/.config/systemd/user/</code>, set <code>Restart=on-failure</code>, and enable it with <code>systemctl --user enable --now</code>. systemd then starts the process when your desktop session starts, restarts it if it crashes, and sends its output to the journal, where <code>journalctl --user</code> can read it. User scope is the right choice for anything that needs your microphone, your display, or your keystrokes, because those belong to your login session and not to the machine.</p>
+
+<p>A hotkey-triggered dictation daemon makes a good worked example. It has to be running before you need it, survive its own bugs, and touch hardware that only exists inside your session.</p>
+
+<h2>Why a plain background process isn't enough</h2>
+
+<p>The usual shortcut is to launch the tool from your window manager's autostart file, or to run <code>nohup mytool &amp;</code> in a terminal. Both work until they don't. If the process crashes, nothing restarts it, and you find out when you press the hotkey and nothing happens. There's no log either, unless you remembered to redirect stderr somewhere.</p>
+
+<p>That failure is worse for a dictation tool, because the hotkey gives no feedback when the daemon is dead. You press Alt+D, talk for ten seconds, and then notice nothing was typed. Autostart scripts also give you no ordering. Your tool may start before PipeWire is ready and fail once on a missing audio socket, with nobody to retry it.</p>
+
+<p>A service manager already solves these problems: dependency ordering, restart policy, log capture, and one consistent way to check status. Reimplementing them in a shell script is how people end up with a pidfile bug.</p>
+
+<h2>The pattern: a user service with a restart policy</h2>
+
+<p>Here is a minimal unit for a daemon like this. The name and path are illustrative, so adjust them for your tool.</p>
+
+<pre><code>[Unit]
+Description=Hotkey dictation daemon
+After=graphical-session.target
+PartOf=graphical-session.target
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+ExecStart=%h/.local/bin/mydictationd
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=graphical-session.target</code></pre>
+
+<p>Save it as <code>~/.config/systemd/user/mydictationd.service</code>, then run <code>systemctl --user daemon-reload</code> and <code>systemctl --user enable --now mydictationd</code>. A few details matter here.</p>
+
+<p><strong>Restart=on-failure</strong> restarts after a non-zero exit, a signal, or a timeout, but not after a clean exit. That's usually what you want, since <code>systemctl --user stop</code> shouldn't trigger a restart loop. <code>Restart=always</code> also restarts after clean exits.</p>
+
+<p><strong>RestartSec and the start limit</strong> keep a broken build from spinning the CPU. By default, systemd gives up after five starts in ten seconds and marks the unit failed. Once you've fixed the cause, clear that state with <code>systemctl --user reset-failed mydictationd</code>.</p>
+
+<p><strong>graphical-session.target</strong> ties the service to your desktop session. It starts when you log in graphically and stops when you log out. Some setups don't activate that target reliably, so if the unit never starts, check <code>systemctl --user status graphical-session.target</code> before blaming the unit.</p>
+
+<h2>Why user scope, not a system service</h2>
+
+<p>A system service runs outside your login. It has no <code>$XDG_RUNTIME_DIR</code>, no session D-Bus, and no access to your PipeWire or PulseAudio socket. You can force it to work with extra permissions and environment hacks, but you'd be giving a long-running process broader access than it needs in order to imitate what your session already provides.</p>
+
+<p>User scope is also the smaller privilege footprint. The service runs as you, can't touch other users' files, and needs no root to install or remove. For a tool that listens to a microphone, that matters. The service can only reach the audio devices your session already has open to you.</p>
+
+<p>Voxtty, a free Linux dictation tool, runs this way. Press Alt+D, speak, and it types the words into the focused app, with faster-whisper transcribing on-device so no audio leaves the machine. Voice activity detection decides when you've stopped talking, and the daemon sits idle until the hotkey fires. <a href="https://voxtty.com">Try Voxtty free</a> if you want to see the pattern in a real service.</p>
+
+<h2>Debugging with journalctl</h2>
+
+<p>Once the service is in the journal, debugging gets much less guessy:</p>
+
+<pre><code>systemctl --user status mydictationd
+journalctl --user -u mydictationd -f
+journalctl --user -u mydictationd -b -p err
+journalctl --user -u mydictationd --since "10 min ago"</code></pre>
+
+<p>The first shows the current state and the last few log lines. The second follows output live, so you can press the hotkey and watch what happens. The third shows errors since boot, and the fourth narrows to a recent window. A crash loop shows up as repeated start and exit lines with timestamps, which tells you far more than "it stopped working".</p>
+
+<h2>Where this breaks down</h2>
+
+<p>Environment variables are the usual trap. A user service doesn't automatically inherit <code>WAYLAND_DISPLAY</code> or <code>DISPLAY</code> in every setup. If your tool works from a terminal but fails under systemd, run <code>systemctl --user show-environment</code> and compare. Many desktop environments handle the import at login, and the fix on others is <code>dbus-update-activation-environment --systemd WAYLAND_DISPLAY DISPLAY</code> in your session startup.</p>
+
+<p>Text injection has its own requirement. On Wayland, typing into other apps generally goes through <code>ydotool</code>, which needs its <code>ydotoold</code> daemon running and permission to write to <code>/dev/uinput</code>. That's a udev or group-membership question, and no unit file fixes it.</p>
+
+<p>Local transcription has limits too. Whisper models handle clear speech in a quiet room well, but strong accents, background noise, and unusual technical vocabulary all lower accuracy. It also won't match the speed of top-tier cloud speech-to-text, especially on a CPU with a larger model. And a wake word, where the daemon listens continuously instead of waiting for a hotkey, is still experimental. Continuous listening costs more CPU and produces more false triggers than a keypress does.</p>
+
+<p>Lastly, <code>loginctl enable-linger</code> keeps user services running without a login session. For a desktop tool that needs your mic and display, that's the wrong behaviour, so leave it off.</p>
+
+<h2>One thing to do today</h2>
+
+<p>Pick one script you currently start from an autostart file, and write a ten-line unit for it. Enable it with <code>systemctl --user enable --now</code>, then kill the process with <code>kill -9</code> and watch systemd bring it back. Run <code>journalctl --user -u yourunit -f</code> while you do it. Ten minutes on that experiment will tell you whether the pattern suits your setup.</p>
+
+    <div class="cta">
+      <h3>Try Voxtty free</h3>
+      <p>Local-first voice dictation for Linux. Press Alt+D, speak, and your words land in whatever app has focus — nothing leaves your machine.</p>
+      <a href="https://voxtty.com" class="btn">Try Voxtty free →</a>
+    </div>
+
+    
+
+    <a href="/blog/" class="back-link">← Back to blog</a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="brand">voxtty<span class="cursor">.</span></div>
+    <a href="https://github.com/PominausGH/voxtty">GitHub ↗</a>
+    <a href="/privacy.html">Privacy</a>
+    <span class="meta">local-first · linux-native · open-core</span>
+  </div>
+</footer>
+</body>
+</html>
