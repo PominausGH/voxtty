@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://analytics.daintytrading.com; connect-src 'self' https://analytics.daintytrading.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'">
+<title>Does local Whisper dictation need a GPU on Linux? | Voxtty</title>
+<meta name="description" content="No. faster-whisper runs on CPU using CTranslate2 and int8 quantization, which is enough for real-time dictation on modest hardware. Here's where it struggles.">
+<link rel="canonical" href="https://voxtty.com/blog/local-whisper-dictation-gpu-needed-linux/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎙️</text></svg>">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Does local Whisper dictation need a GPU on Linux?">
+<meta property="og:description" content="No. faster-whisper runs on CPU using CTranslate2 and int8 quantization, which is enough for real-time dictation on modest hardware. Here's where it struggles.">
+<meta property="og:url" content="https://voxtty.com/blog/local-whisper-dictation-gpu-needed-linux/">
+<meta property="article:published_time" content="2026-10-07">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Does local Whisper dictation need a GPU on Linux?",
+  "description": "No. faster-whisper runs on CPU using CTranslate2 and int8 quantization, which is enough for real-time dictation on modest hardware. Here's where it struggles.",
+  "url": "https://voxtty.com/blog/local-whisper-dictation-gpu-needed-linux/",
+  "datePublished": "2026-10-07",
+  "author": { "@type": "Organization", "name": "Voxtty", "url": "https://voxtty.com" },
+  "publisher": { "@type": "Organization", "name": "Voxtty", "url": "https://voxtty.com" }
+}
+</script>
+<style>
+  :root {
+    --ground:#0B0E14; --surface:#12161F; --surface-2:#1A202B;
+    --ink:#E9EDF3; --muted:#9BA7B6; --faint:#8892A2; --border:#232B38;
+    --accent:#FF6A5A; --accent-ink:#FF8578; --accent-soft:#2A1613;
+    --teal:#43B8B2;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Fira Code",Menlo,Consolas,monospace;
+    --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --shadow:0 2px 6px rgba(0,0,0,.3), 0 20px 50px rgba(0,0,0,.4);
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --ground:#F2F4F7; --surface:#FFFFFF; --surface-2:#F9FAFB;
+      --ink:#14181F; --muted:#57616E; --faint:#66707E; --border:#E2E6EC;
+      --accent:#DE4E3B; --accent-ink:#B63C2C; --accent-soft:#FBE6E1;
+      --teal:#0E7C7B;
+      --shadow:0 1px 2px rgba(20,30,45,.05), 0 16px 40px rgba(20,30,45,.09);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:#0B0E14; --surface:#12161F; --surface-2:#1A202B;
+    --ink:#E9EDF3; --muted:#9BA7B6; --faint:#8892A2; --border:#232B38;
+    --accent:#FF6A5A; --accent-ink:#FF8578; --accent-soft:#2A1613; --teal:#43B8B2;
+    --shadow:0 2px 6px rgba(0,0,0,.3), 0 20px 50px rgba(0,0,0,.4);
+  }
+  :root[data-theme="light"] {
+    --ground:#F2F4F7; --surface:#FFFFFF; --surface-2:#F9FAFB;
+    --ink:#14181F; --muted:#57616E; --faint:#66707E; --border:#E2E6EC;
+    --accent:#DE4E3B; --accent-ink:#B63C2C; --accent-soft:#FBE6E1; --teal:#0E7C7B;
+    --shadow:0 1px 2px rgba(20,30,45,.05), 0 16px 40px rgba(20,30,45,.09);
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--ground); color:var(--ink); font-family:var(--sans);
+    line-height:1.6; -webkit-font-smoothing:antialiased; }
+  a { color:inherit; }
+  .wrap { max-width:760px; margin:0 auto; padding:0 clamp(18px,4vw,36px); }
+  nav { display:flex; align-items:center; justify-content:space-between; padding:20px 0;
+    border-bottom:1px solid var(--border); max-width:1060px; margin:0 auto; padding-left:clamp(18px,4vw,36px); padding-right:clamp(18px,4vw,36px); }
+  .brand { font-family:var(--mono); font-size:19px; font-weight:600; letter-spacing:-.01em; text-decoration:none; color:var(--ink); }
+  .brand .cursor { display:inline-block; width:.6ch; color:var(--accent); }
+  .navlinks { display:flex; gap:22px; align-items:center; font-size:14px; }
+  .navlinks a { color:var(--muted); text-decoration:none; }
+  .navlinks a:hover, .navlinks a.active { color:var(--ink); }
+  .ghbtn { font-family:var(--mono); font-size:13px; border:1px solid var(--border);
+    border-radius:8px; padding:7px 13px; color:var(--ink); text-decoration:none; background:var(--surface); }
+  .breadcrumb { font-family:var(--mono); font-size:12.5px; color:var(--faint); margin:40px 0 18px; }
+  .breadcrumb a { color:var(--faint); }
+  .breadcrumb a:hover { color:var(--muted); }
+  .tag { display:inline-block; font-family:var(--mono); font-size:12px; color:var(--accent-ink);
+    background:var(--accent-soft); border-radius:999px; padding:4px 11px; margin-bottom:16px; }
+  h1 { font-size:clamp(28px,4.6vw,42px); line-height:1.1; letter-spacing:-.03em; margin:0 0 18px;
+    font-weight:700; text-wrap:balance; }
+  .meta { font-family:var(--mono); font-size:13px; color:var(--faint); display:flex; gap:16px; margin-bottom:44px; }
+  .body { padding-bottom:64px; }
+  .body p { color:var(--muted); font-size:17px; line-height:1.8; margin:0 0 22px; }
+  .body h2 { font-size:1.4rem; font-weight:700; letter-spacing:-.02em; margin:42px 0 14px; color:var(--ink); }
+  .body h3 { font-size:1.1rem; font-weight:600; margin:28px 0 10px; color:var(--ink); }
+  .body ul, .body ol { margin:0 0 22px 22px; color:var(--muted); font-size:17px; line-height:1.8; }
+  .body li { margin-bottom:8px; }
+  .body strong { color:var(--ink); font-weight:600; }
+  .body a { color:var(--accent-ink); }
+  .body a:hover { text-decoration:underline; }
+  .body blockquote { border-left:3px solid var(--accent); padding-left:20px; margin:28px 0; color:var(--faint); font-style:italic; }
+  .body code { font-family:var(--mono); font-size:.9em; background:var(--surface-2); padding:2px 6px; border-radius:4px; }
+  .cta { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:28px;
+    margin:16px 0 48px; box-shadow:var(--shadow); }
+  .cta h3 { margin:0 0 8px; font-size:18px; }
+  .cta p { color:var(--muted); margin:0 0 18px; font-size:15px; }
+  .btn { font-family:var(--mono); font-size:14px; font-weight:600; text-decoration:none;
+    border-radius:10px; padding:11px 18px; display:inline-flex; align-items:center; gap:9px;
+    background:#CE3E2B; color:#fff; }
+  .btn:hover { filter:brightness(1.06); }
+  .back-link { display:inline-flex; align-items:center; gap:6px; color:var(--faint); font-family:var(--mono);
+    font-size:13px; text-decoration:none; }
+  .back-link:hover { color:var(--muted); }
+  footer { border-top:1px solid var(--border); padding:36px 0 56px; max-width:1060px; margin:0 auto; }
+  footer .wrap { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px; padding:0 clamp(18px,4vw,36px); }
+  footer .brand { font-size:16px; }
+  footer .meta { font-family:var(--mono); font-size:12.5px; color:var(--faint); }
+  footer a { color:var(--muted); text-decoration:none; font-size:14px; }
+  footer a:hover { color:var(--ink); }
+  @media(max-width:700px) { .navlinks .hide { display:none; } }
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="brand">voxtty<span class="cursor">.</span></a>
+  <div class="navlinks">
+    <a href="/blog/" class="active">Blog</a>
+    <a href="/#pricing" class="hide">Pricing</a>
+    <a class="ghbtn" href="https://github.com/PominausGH/voxtty">GitHub ↗</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="breadcrumb"><a href="/blog/">Blog</a> / Linux</div>
+  <span class="tag">Linux</span>
+  <h1>Does local Whisper dictation need a GPU on Linux?</h1>
+  <div class="meta">
+    <span>7 October 2026</span>
+    <span>5 min read</span>
+  </div>
+
+  <div class="body">
+    <p>No, local Whisper dictation does not need a GPU on Linux. faster-whisper runs Whisper models through CTranslate2, an inference engine optimised for CPUs, and with int8 quantization the small and base models transcribe a sentence of speech faster than you spoke it on an ordinary modern laptop. A GPU helps with the largest models and with batch jobs, but dictation is short bursts of speech, which is a much lighter workload.</p>
+<p>The catch is that "modest hardware" has a floor. An old dual-core chip, or a laptop that throttles after two minutes under load, will still make dictation feel sluggish. Both halves of that are worth understanding before you install anything.</p>
+
+<h2>Why the GPU assumption is so common</h2>
+<p>Most people meet Whisper through the original PyTorch reference implementation, and that one is slow on CPU. It loads float32 weights, uses a general-purpose runtime, and was written for research rather than for sitting in the background of a desktop. The reasonable conclusion is "I need CUDA." On Linux that also means proprietary drivers, a few gigabytes of toolkit, and a card that may not exist in your machine.</p>
+<p>That assumption matters because of the alternative. If local transcription requires a GPU, many people fall back to a cloud speech-to-text API. The failure modes there are concrete: every utterance adds a network round trip, an API outage means you cannot type by voice at all, and your recorded audio sits on someone else's server. Removing the GPU requirement removes the main practical reason to accept those tradeoffs.</p>
+
+<h2>What makes CPU inference practical</h2>
+<p>Two things do most of the work. The first is CTranslate2, the C++ inference engine underneath faster-whisper. It uses optimised CPU kernels, fuses operations, and avoids the overhead of a full deep-learning framework. The same Whisper weights run noticeably faster and in less memory than in the reference implementation, without changing the model itself.</p>
+<p>The second is quantization. Whisper weights are normally stored as 32-bit or 16-bit floats. Converting them to 8-bit integers (<code>int8</code> in faster-whisper's <code>compute_type</code> setting) roughly halves or quarters the memory the model needs and lets the CPU do much cheaper arithmetic. The cost is a small drop in accuracy, which tends to show up as an occasional wrong word on hard audio rather than broad degradation. I won't quote a percentage here because it varies by model, language and audio.</p>
+<p>The model size is the other lever, and it matters more than quantization. Roughly in order: tiny, base, small, medium, large. Each step up is more accurate and noticeably slower. For dictation on CPU, small with int8 is a common sweet spot, and base is the fallback when the machine is struggling.</p>
+<p>Voice activity detection helps too. A VAD stage figures out when you're actually speaking, so the model only processes speech and not the silence between sentences. For a tool that listens for a hotkey and then transcribes, that keeps CPU usage near zero while idle.</p>
+<p>Voxtty is built this way. You press Alt+D, speak, and the text is typed into whichever app has focus, using faster-whisper on CPU by default. Nothing is uploaded, and the basic cleanup of filler words is rule-based and offline. It runs as a systemd user service, so if you want to know how that stays alive across logins and crashes, we've covered <a href="https://voxtty.com/blog/keep-background-linux-tool-running-systemd-user/">how to keep a background tool running with systemd --user</a>.</p>
+
+<h2>Where CPU-only still struggles</h2>
+<p>Old hardware is the obvious one. A decade-old low-power laptop CPU may take longer to transcribe an utterance than the utterance lasted, and the delay is noticeable when you're waiting for a sentence to appear. Dropping to the tiny or base model helps, but those models make more mistakes, so you trade speed for cleanup work.</p>
+<p>Thermal throttling is the less obvious one. A laptop that benchmarks fine for ten seconds can slow down sharply once the fans can't keep up, especially if you're also compiling something or running a browser with forty tabs. Dictation is bursty, so it usually copes better than a long batch job, but a thin-and-light machine under sustained load will show the lag.</p>
+<p>Plain accuracy limits apply regardless of hardware. Whisper models handle clear speech in a quiet room well, and they get worse with strong accents, background noise and unusual technical vocabulary. Larger models help, but a larger model on CPU is exactly where the speed problem returns. On-device transcription is also not as fast as the best cloud services, and anyone who tells you otherwise is rounding in their own favour.</p>
+<p>Two smaller practical notes. Typing into other apps relies on <code>ydotool</code>, which needs its daemon running and permission to use <code>/dev/uinput</code>, so check that your distro packages it and that your user is set up for it. And hands-free wake word activation is experimental, because always-on listening is harder to get right than a hotkey.</p>
+
+<h2>One thing to do today</h2>
+<p>Check what you actually have before assuming you need new hardware. Run <code>lscpu</code> to see your core count, then try dictating a single paragraph with the small model on int8. If it keeps up, you're done; if it lags, drop to base and see whether the accuracy is tolerable. <a href="https://voxtty.com">Try Voxtty free</a> if you'd like a ready-made way to run that test with a hotkey and no cloud account.</p>
+
+    <div class="cta">
+      <h3>Try Voxtty free</h3>
+      <p>Local-first voice dictation for Linux. Press Alt+D, speak, and your words land in whatever app has focus — nothing leaves your machine.</p>
+      <a href="https://voxtty.com" class="btn">Try Voxtty free →</a>
+    </div>
+
+    <div style="margin-top:56px;padding-top:40px;border-top:1px solid rgba(128,128,128,.25)"><h3 style="font-size:1.1rem;font-weight:700;margin-bottom:20px">Related Articles</h3><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px"><a href="https://voxtty.com/blog/keep-background-linux-tool-running-systemd-user/" style="display:block;padding:18px;border:1px solid rgba(128,128,128,.25);border-radius:12px;text-decoration:none;color:inherit"><span style="font-size:.75rem;font-weight:600;color:#e11d48;text-transform:uppercase;letter-spacing:.03em">Linux</span><div style="font-weight:700;margin-top:6px;line-height:1.35">How do I keep a background tool running with systemd --user?</div></a></div></div>
+
+    <a href="/blog/" class="back-link">← Back to blog</a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="brand">voxtty<span class="cursor">.</span></div>
+    <a href="https://github.com/PominausGH/voxtty">GitHub ↗</a>
+    <a href="/privacy.html">Privacy</a>
+    <span class="meta">local-first · linux-native · open-core</span>
+  </div>
+</footer>
+</body>
+</html>
