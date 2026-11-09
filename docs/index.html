@@ -223,19 +223,6 @@
       "name": "Free",
       "price": "0",
       "priceCurrency": "USD"
-    },
-    {
-      "@type": "Offer",
-      "name": "Pro",
-      "price": "5",
-      "priceCurrency": "USD",
-      "priceSpecification": {
-        "@type": "UnitPriceSpecification",
-        "price": "5",
-        "priceCurrency": "USD",
-        "billingIncrement": 1,
-        "unitCode": "MON"
-      }
     }
   ]
 }
@@ -274,7 +261,7 @@
       "name": "Is it really free?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "The core app is free and open source. Pro (AI cleanup, per-app formatting, a GUI, cross-platform builds) is $5/month or $50/year. AI cleanup runs on your own API key, so your usage stays yours and costs pennies."
+        "text": "Yes. The whole app is free and open source, including the optional AI cleanup, which runs on your own Anthropic API key and costs pennies. A paid Pro tier is planned, but it isn't on sale yet."
       }
     },
     {
@@ -282,7 +269,7 @@
       "name": "Windows or macOS?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Linux first. Native Windows and macOS builds are on the roadmap for Pro."
+        "text": "Linux first. Windows support is experimental (there's a setup script in the repo). Packaged Windows and macOS builds are planned."
       }
     }
   ]
@@ -412,8 +399,8 @@
 <section id="pricing">
   <div class="wrap">
     <p class="kicker">Open-core</p>
-    <h2>Free forever. Pro when you want more.</h2>
-    <p class="lead">The core app is open source and does real work on its own. Pro adds the polish and the cross-platform builds.</p>
+    <h2>Free and open source. Pro is coming.</h2>
+    <p class="lead">The core app is open source and does real work on its own. A Pro tier with extra polish and cross-platform builds is planned. It isn't on sale yet.</p>
     <div class="tiers">
       <div class="tier">
         <span class="name">Free · open source</span>
@@ -425,6 +412,7 @@
           <li>Types into any app</li>
           <li>Offline rule-based cleanup</li>
           <li>Custom word dictionary</li>
+          <li>Optional AI cleanup (Claude, your own API key)</li>
         </ul>
         <div class="cta">
           <a class="btn ghost" href="https://github.com/PominausGH/voxtty">Install free →</a>
@@ -432,18 +420,17 @@
       </div>
       <div class="tier pro">
         <span class="name">Pro</span>
-        <div class="price">$5 <span>/mo · BYO key</span></div>
-        <p class="tagline">or $50/year — 2 months free. The smart features and the polish.</p>
+        <div class="price">Soon <span>· not on sale yet</span></div>
+        <p class="tagline">In development. Nothing to buy until it ships.</p>
         <ul>
-          <li>AI cleanup — cloud &amp; local LLM</li>
+          <li>AI cleanup with a local LLM</li>
           <li>Per-app tone &amp; formatting</li>
           <li>Auto-learning dictionary</li>
           <li>GUI settings + auto-update</li>
           <li>Windows &amp; macOS builds</li>
         </ul>
         <div class="cta">
-          <a class="btn primary" href="https://buy.stripe.com/00w00k9Ki6aU4Oh8wiao808">Get Pro — $5/mo</a>
-          <a class="btn ghost" href="https://buy.stripe.com/28E3cwbSqbvecgJh2Oao809">$50/yr</a>
+          <a class="btn primary" href="https://github.com/PominausGH/voxtty">Watch on GitHub for release →</a>
         </div>
       </div>
     </div>
@@ -463,7 +450,7 @@
           <tr><th scope="row">Transcription</th><td class="vox">On your machine</td><td class="dim">Cloud</td></tr>
           <tr><th scope="row">Works offline</th><td class="vox">Yes</td><td class="dim">No</td></tr>
           <tr><th scope="row">Audio leaves your device</th><td class="vox">Never</td><td class="dim">Always</td></tr>
-          <tr><th scope="row">Price</th><td class="vox">Free · Pro $5/mo (BYO key)</td><td class="dim">$15 / month</td></tr>
+          <tr><th scope="row">Price</th><td class="vox">Free (open source)</td><td class="dim">$15 / month</td></tr>
           <tr><th scope="row">Open source</th><td class="vox">Yes</td><td class="dim">No</td></tr>
           <tr><th scope="row">AI cleanup</th><td class="vox">Optional</td><td>Built-in</td></tr>
         </tbody>
@@ -480,8 +467,8 @@
       <div class="qa"><h3>Does my voice go to the cloud?</h3><p>No. Transcription runs entirely on your machine. The only thing that can leave is text — and only if you opt into AI cleanup. Leave it off and Voxtty is fully offline.</p></div>
       <div class="qa"><h3>Does it work without internet?</h3><p>Yes. Everything except the optional AI cleanup runs locally, so dictation works on a plane or off the grid.</p></div>
       <div class="qa"><h3>Which apps can I dictate into?</h3><p>Any of them. If you can type in it, Voxtty can type in it — editors, browsers, chat, terminals.</p></div>
-      <div class="qa"><h3>Is it really free?</h3><p>The core app is free and open source. Pro (AI cleanup, per-app formatting, a GUI, cross-platform builds) is $5/month or $50/year. AI cleanup runs on your own API key, so your usage stays yours and costs pennies.</p></div>
-      <div class="qa"><h3>Windows or macOS?</h3><p>Linux first. Native Windows and macOS builds are on the roadmap for Pro.</p></div>
+      <div class="qa"><h3>Is it really free?</h3><p>Yes. The whole app is free and open source, including the optional AI cleanup, which runs on your own Anthropic API key and costs pennies. A paid Pro tier is planned, but it isn't on sale yet.</p></div>
+      <div class="qa"><h3>Windows or macOS?</h3><p>Linux first. Windows support is experimental (there's a setup script in the repo). Packaged Windows and macOS builds are planned.</p></div>
     </div>
   </div>
 </section>

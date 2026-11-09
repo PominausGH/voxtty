@@ -135,7 +135,7 @@ To enable AI cleanup, set `cleanup_enabled: true` in `config.json` and put your 
 
 ## Pricing
 
-This repo is the free, open-source core — full local dictation, no license gate. See [voxtty.com/#pricing](https://voxtty.com/#pricing) for the current Pro roadmap.
+This repo is the free, open-source core — full local dictation, no license gate. A paid Pro tier is planned but not on sale yet — see [voxtty.com/#pricing](https://voxtty.com/#pricing).
 
 ## License
 
