@@ -24,7 +24,38 @@ import pyaudio
 import webrtcvad
 from faster_whisper import WhisperModel
 from PIL import Image, ImageDraw
-import pystray
+
+
+def _pick_tray_backend() -> None:
+    """Pin a pystray backend that will actually load.
+
+    pystray only moves to its next backend on ImportError, but a missing GTK
+    or AppIndicator typelib raises ValueError and kills startup. That happens
+    on desktops without gir1.2-gtk-3.0 / AppIndicator, and in the AppImage,
+    which bundles PyGObject but relies on the host's typelibs.
+    """
+    if sys.platform != "linux" or os.environ.get("PYSTRAY_BACKEND"):
+        return
+    try:
+        import gi
+    except ImportError:
+        return  # pystray goes straight to its X11 backend.
+    try:
+        gi.require_version("Gtk", "3.0")
+    except ValueError:
+        os.environ["PYSTRAY_BACKEND"] = "xorg"
+        return
+    for namespace in ("AppIndicator3", "AyatanaAppIndicator3"):
+        try:
+            gi.require_version(namespace, "0.1")
+            return  # pystray's preferred AppIndicator backend will load.
+        except ValueError:
+            pass
+    os.environ["PYSTRAY_BACKEND"] = "gtk"
+
+
+_pick_tray_backend()
+import pystray  # noqa: E402  (must follow _pick_tray_backend)
 
 from .backends import get_backend
 

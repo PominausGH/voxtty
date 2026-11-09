@@ -73,7 +73,13 @@ class LinuxBackend(Backend):
         sys.executable's directory is checked first: under pipx that is the
         managed venv holding the real script, while `voxtty` on PATH is only a
         symlink into it.
+
+        Under an AppImage, $APPIMAGE is the .AppImage file itself; anything
+        inside the app is a temporary mount that vanishes when it exits.
         """
+        appimage = os.environ.get("APPIMAGE")
+        if appimage and Path(appimage).is_file():
+            return Path(appimage)
         candidate = Path(sys.executable).parent / "voxtty"
         if candidate.exists():
             return candidate
