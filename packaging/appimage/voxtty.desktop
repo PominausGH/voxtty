@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Voxtty
+Comment=Private voice dictation: press Alt+D, speak, and it types
+Exec=voxtty
+Icon=voxtty
+Categories=Utility;Accessibility;
+Terminal=false

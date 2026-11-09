@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "voxtty"
-version = "0.1.1"
+version = "0.1.2"
 description = "Private, local-first voice dictation for Linux and Windows — press Alt+D, speak, and your words are typed into any focused app."
 readme = "README.md"
 requires-python = ">=3.10"

@@ -1,0 +1,41 @@
+name: Release AppImage
+
+# Push a tag like v0.1.2 to build the AppImage and publish a GitHub release.
+# Run it by hand (Actions tab) to build without releasing; the AppImage is
+# then attached to the run as an artifact.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  appimage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check tag matches package version
+        if: github.ref_type == 'tag'
+        run: |
+          v=$(python3 -c "import tomllib;print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          [ "v$v" = "$GITHUB_REF_NAME" ] || { echo "tag $GITHUB_REF_NAME != pyproject version $v"; exit 1; }
+
+      - name: Build
+        run: packaging/appimage/build.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: voxtty-appimage
+          path: dist/Voxtty-*.AppImage*
+
+      - name: Publish release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/Voxtty-x86_64.AppImage dist/Voxtty-x86_64.AppImage.sha256 \
+            --title "Voxtty $GITHUB_REF_NAME" \
+            --notes-file packaging/appimage/RELEASE_NOTES.md

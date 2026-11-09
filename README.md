@@ -18,11 +18,40 @@ Site: [voxtty.com](https://voxtty.com)
 
 ## Requirements
 
-- **Linux**: Ubuntu (Wayland), Python 3.10+, `ydotool` for typing, `portaudio` for audio capture
+- **Linux**: x86_64, `ydotool` for typing, membership of the `input` group for the hotkey. Building from source also needs Python 3.10+ and `portaudio`
 - **Windows**: Windows 10/11, Python 3.10+
 - A microphone
 
 ## Installation (Linux)
+
+### AppImage (easiest)
+
+One file, nothing to compile. Works on x86_64 distros from 2022 onwards
+(Ubuntu 22.04+, Fedora 36+, Debian 12+, Arch).
+
+```bash
+# 1. Typing and the hotkey need two things from your system. Debian / Ubuntu:
+sudo apt install ydotool libnotify-bin
+sudo systemctl enable --now ydotoold          # without it nothing is typed
+sudo usermod -aG input "$USER"                # without it Alt+D never fires
+#    Fedora: sudo dnf install ydotool libnotify   (then the same two lines)
+
+# 2. Download the AppImage and register it to start at login.
+mkdir -p ~/Applications && cd ~/Applications
+curl -LO https://github.com/PominausGH/voxtty/releases/latest/download/Voxtty-x86_64.AppImage
+chmod +x Voxtty-x86_64.AppImage
+./Voxtty-x86_64.AppImage --install-service
+```
+
+**Log out and back in** for the `input` group to take effect, then press
+**Alt+D** anywhere. The first run downloads the Whisper speech model (about
+500 MB), so give it a minute. Keep the AppImage where it is: the login
+service points at that file.
+
+If it won't start with a FUSE error, install your distro's `fuse3` package, or
+run it as `./Voxtty-x86_64.AppImage --appimage-extract-and-run`.
+
+### From source
 
 ```bash
 git clone https://github.com/PominausGH/voxtty.git
@@ -36,8 +65,8 @@ cd voxtty
 
 ### With pipx
 
-`setup.sh` is the recommended path because it installs the system packages for
-you. If you would rather manage it yourself, three of Voxtty's dependencies
+For a source install, `setup.sh` is the easier path because it installs the
+system packages for you. If you would rather manage it yourself, three of Voxtty's dependencies
 (`evdev`, `PyAudio`, `webrtcvad`) publish no wheels and are compiled at install
 time, so you need a compiler and the relevant headers **first**:
 

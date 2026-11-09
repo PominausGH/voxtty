@@ -1,0 +1,6 @@
+#!/bin/sh
+# AppImage entry point: run Voxtty on the bundled Python.
+HERE="$(dirname "$(readlink -f "$0")")"
+export LD_LIBRARY_PATH="$HERE/usr/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+unset PYTHONHOME PYTHONPATH
+exec "$HERE/usr/python/bin/python3" -I -m voxtty "$@"
